@@ -5,10 +5,10 @@ import os
 import sys
 from music21 import converter, instrument, note, chord
 
+# music genre
 directory = 'classical'
 
 def main():
-	
 	# check if given directory exists
 	exists = os.path.isdir(directory)
 	if not exists:
@@ -30,7 +30,6 @@ def main():
 
 # returns a sequential list of all notes from all songs in ./classical directory
 def get_notes():
-
 	# if pickled result exists, return that
 	exists = os.path.isfile('pickle/' + directory + '_notes')	
 	if exists:
@@ -69,7 +68,7 @@ def prepare_sequences(notes, n_unique_notes):
 	# get all pitch names
 	pitchnames = sorted(set(item for item in notes))
 
-	 # create a dictionary to map pitches to integers
+	# create a dictionary to map pitches to integers
 	note_to_int = dict((note, number) for number, note in enumerate(pitchnames))
 
 	network_input = []
