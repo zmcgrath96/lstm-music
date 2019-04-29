@@ -4,8 +4,12 @@ import numpy as np
 def sigmoid(X):
     return 1/(1+np.exp(-X))
 
+# derivitive of sigmoid
+def sigmoid_derivative(X):
+    return sigmoid(X) * (1 - sigmoid(X)) 
+
 #tanh activation
-def tanh_activation(X):
+def tanh(X):
     return np.tanh(X)
 
 #softmax activation
