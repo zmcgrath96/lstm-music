@@ -6,7 +6,7 @@ import sys
 from music21 import converter, instrument, note, chord
 
 # music genre
-directory = 'classical'
+directory = 'clean_jazz'
 
 def main():
 	# check if given directory exists
@@ -45,11 +45,16 @@ def get_notes():
 
 		notes_to_parse = None
 
-		try: # file has instrument parts
-			s2 = instrument.partitionByInstrument(midi)
-			notes_to_parse = s2.parts[0].recurse() 
-		except: # file has notes in a flat structure
-			notes_to_parse = midi.flat.notes
+		s2 = instrument.partitionByInstrument(midi)
+		for i in s2:
+			name = i.getInstrument().instrumentName
+			if name == 'Piano':
+				piano = i
+			if name == 'Acoustic Bass':
+				bass = i
+			if name == 'Saxophone':
+				sax = i
+		notes_to_parse = s2.parts[0].recurse() 
 
 		for element in notes_to_parse:
 			if isinstance(element, note.Note):
