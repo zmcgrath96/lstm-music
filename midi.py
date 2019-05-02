@@ -5,6 +5,7 @@ import os
 import sys
 from music21 import converter, instrument, note, chord
 from utils import *
+import math
 
 # music genre
 directory = 'clean_jazz'
@@ -41,6 +42,7 @@ def get_notes(note_width=.25):
 	bass = []
 	sax = []
 	songs = {}
+	num_songs = 0
 	for file in glob.glob(directory + "/*.mid"):
 		midi = None
 		try:
@@ -50,6 +52,7 @@ def get_notes(note_width=.25):
 			continue
 
 		print("Parsing %s" % file)
+		num_songs += 1
 		songs[file] = {}
 		instruments = instrument.partitionByInstrument(midi)
 		for i in instruments:
@@ -64,26 +67,41 @@ def get_notes(note_width=.25):
 				songs[file]['sax'] = i
 				sax.append(i)
 
-	enumerated_notes = {}
 	num = 0
 	# get all of the unique combinations of notes and chords
+	# after saving all of the notes as embeddings in the enumerated_notes dict, 
+	# add all of the notes to the array for each song for each of the instruments
 	print('Getting all unique notes')
+	enumerated_notes = {}
+	embedded = [[] for _ in range(num_songs)]
+	sc = 0
 	for s in songs:
+		embedded[sc] = [[] for _ in range(3)]
+		s_l = max([len(songs[s][i]) for i in songs[s]])
+		scaled_s_l = math.ceil(s_l / note_width)
+		ic = 0
 		for inst in songs[s]:
 			notes = songs[s][inst].notesAndRests.activeElementList
+			embedded[sc][ic] = [0 for _ in range(scaled_s_l)]
+			n = 0
 			for i in range(1, len(notes)):
 				e_complete = get_all_in_offset(notes, i)
 				if e_complete not in enumerated_notes:
 					enumerated_notes[e_complete] = num
 					num += 1
+				offset = notes[i].offset
+				if offset % note_width == 0:
+					embedded[sc][ic][n] = enumerated_notes[e_complete]
+				n+= 1
+			ic += 1
+		sc += 1
+
+	print(embedded)
 	print('done')
 
 
 	# Go through the songs and build [] for each instrument
-	# {song: {piano:[], bass: [], sax:[]}}
-
-	for s in songs:
-		for inst in songs[s]:
+	# {song: {piano:[], bass: [], sax:[]}
 
 	#pickle.dump(notes, open('pickle/' + directory + '_notes', 'wb'))
 
