@@ -4,6 +4,7 @@ import glob
 import os
 import sys
 from music21 import converter, instrument, note, chord
+from utils import *
 
 # music genre
 directory = 'clean_jazz'
@@ -29,42 +30,83 @@ def main():
 	pickle.dump(y, open('pickle/' + directory + '_outputs', 'wb'))
 
 # returns a sequential list of all notes from all songs in ./classical directory
-def get_notes():
+def get_notes(note_width=.25):
 	# if pickled result exists, return that
 	exists = os.path.isfile('pickle/' + directory + '_notes')	
 	if exists:
 		return pickle.load(open('pickle/' + directory + '_notes', 'rb'))
 
 	# if pickled result does not exist, create it and pickle it
-	notes = []
-
+	piano = []
+	bass = []
+	sax = []
+	songs = {}
 	for file in glob.glob(directory + "/*.mid"):
-		midi = converter.parse(file)
+		midi = None
+		try:
+			midi = converter.parse(file)
+		except Exception as e:
+			print('Could not parse file: {}'.format(file))
+			continue
 
 		print("Parsing %s" % file)
-
-		notes_to_parse = None
-
-		s2 = instrument.partitionByInstrument(midi)
-		for i in s2:
+		songs[file] = {}
+		instruments = instrument.partitionByInstrument(midi)
+		for i in instruments:
 			name = i.getInstrument().instrumentName
 			if name == 'Piano':
-				piano = i
-			if name == 'Acoustic Bass':
-				bass = i
-			if name == 'Saxophone':
-				sax = i
-		notes_to_parse = s2.parts[0].recurse() 
+				songs[file]['piano'] = i
+				piano.append(i)
+			elif name == 'Acoustic Bass':
+				songs[file]['bass'] = i
+				bass.append(i)
+			elif name == 'Saxophone':
+				songs[file]['sax'] = i
+				sax.append(i)
 
-		for element in notes_to_parse:
-			if isinstance(element, note.Note):
-				notes.append(str(element.pitch))
-			elif isinstance(element, chord.Chord):
-				notes.append('.'.join(str(n) for n in element.normalOrder))
+	enumerated_notes = {}
+	num = 0
+	# get all of the unique combinations of notes and chords
+	print('Getting all unique notes')
+	for s in songs:
+		for inst in songs[s]:
+			notes = songs[s][inst].notesAndRests.activeElementList
+			for i in range(1, len(notes)):
+				e_complete = get_all_in_offset(notes, i)
+				if e_complete not in enumerated_notes:
+					enumerated_notes[e_complete] = num
+					num += 1
+	print('done')
 
-	pickle.dump(notes, open('pickle/' + directory + '_notes', 'wb'))
+
+	# Go through the songs and build [] for each instrument
+	# {song: {piano:[], bass: [], sax:[]}}
+
+	for s in songs:
+		for inst in songs[s]:
+
+	#pickle.dump(notes, open('pickle/' + directory + '_notes', 'wb'))
 
 	return notes
+
+def get_all_in_offset(notes, i):
+	n = notes[i]
+	offset = n.offset
+	e_note = []
+	e_chord = []
+	j = 0
+	while i+j < len(notes) and notes[i+j].offset == offset:
+		if not isinstance(n, note.Note) and not isinstance(n, chord.Chord) and not isinstance(n, note.Rest):
+			j += 1
+			continue
+		if n.isChord:
+			e_chord.append(n.commonName)
+		else:
+			e_note.append(n.name)
+		j += 1
+
+	return stringify_notes(sort_notes(e_note)) + stringify_chords(sort_chords(e_chord))
+
 
 # creates neural network inputs and outputs
 def prepare_sequences(notes, n_unique_notes):
