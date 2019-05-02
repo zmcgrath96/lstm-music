@@ -74,34 +74,30 @@ def get_notes(note_width=.25):
 	print('Getting all unique notes')
 	enumerated_notes = {}
 	embedded = [[] for _ in range(num_songs)]
-	sc = 0
+	s_count = 0
 	for s in songs:
-		embedded[sc] = [[] for _ in range(3)]
+		embedded[s_count] = [[] for _ in range(3)]
 		s_l = max([len(songs[s][i]) for i in songs[s]])
 		scaled_s_l = math.ceil(s_l / note_width)
-		ic = 0
+		i_count = 0
 		for inst in songs[s]:
 			notes = songs[s][inst].notesAndRests.activeElementList
-			embedded[sc][ic] = [0 for _ in range(scaled_s_l)]
-			n = 0
+			embedded[s_count][i_count] = [0 for _ in range(scaled_s_l)]
+			n_count = 0
 			for i in range(1, len(notes)):
-				e_complete = get_all_in_offset(notes, i)
+				e_complete, off_n_count = get_all_in_offset(notes, i)
 				if e_complete not in enumerated_notes:
 					enumerated_notes[e_complete] = num
 					num += 1
 				offset = notes[i].offset
 				if offset % note_width == 0:
-					embedded[sc][ic][n] = enumerated_notes[e_complete]
-				n+= 1
-			ic += 1
-		sc += 1
+					embedded[s_count][i_count][n_count] = enumerated_notes[e_complete]
+				n_count += off_n_count
+			i_count += 1
+		s_count += 1
 
-	print(embedded)
+	print(enumerated_notes)
 	print('done')
-
-
-	# Go through the songs and build [] for each instrument
-	# {song: {piano:[], bass: [], sax:[]}
 
 	#pickle.dump(notes, open('pickle/' + directory + '_notes', 'wb'))
 
@@ -118,12 +114,14 @@ def get_all_in_offset(notes, i):
 			j += 1
 			continue
 		if n.isChord:
-			e_chord.append(n.commonName)
-		else:
+			e_chord += chord_to_notes(n)
+		elif n.isRest:
 			e_note.append(n.name)
+		else:
+			e_note.append(n.nameWithOctave)
 		j += 1
 
-	return stringify_notes(sort_notes(e_note)) + stringify_chords(sort_chords(e_chord))
+	return stringify_notes(sort_notes(e_note)) + stringify_chords(sort_chords(e_chord)), j
 
 
 # creates neural network inputs and outputs
