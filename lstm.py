@@ -22,4 +22,4 @@ class musicLSTM:
 
     def predict(self, input, filepath):
         self.model = load_model(filepath)
-         return self.model.predict(input)
+        return self.model.predict(input)
