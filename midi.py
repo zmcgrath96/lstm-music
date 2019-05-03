@@ -30,10 +30,7 @@ def main():
 	# y = the next note in the sequence (ex. the 11th note)
 
 	# embedded songs order (piano -> bass -> sax)
-	x, y = prepare_sequences(embedded_songs)
-
-	pickle.dump(x, open('pickle/' + directory + '_inputs', 'wb'))
-	pickle.dump(y, open('pickle/' + directory + '_outputs', 'wb'))
+	prepare_sequences(embedded_songs, len(encodings))
 
 # returns a sequential list of all notes from all songs in ./classical directory
 def get_notes(note_width=.25):
@@ -87,35 +84,132 @@ def get_notes(note_width=.25):
 
 
 # creates neural network inputs and outputs
-def prepare_sequences(songs, input_sequence_length=100):
+def prepare_sequences(songs, n_unique_notes, input_sequence_length=100):
 
 	#TODO: figure out how to structure neural network inputs / outputs
 
-	network_input = []
-	network_output = []
+	## arch 1
 
-	# create input sequences and the corresponding outputs
-	for i in range(0, len(notes) - input_sequence_length, 1):
-		sequence_in = notes[i:i + input_sequence_length]
-		sequence_out = notes[i + input_sequence_length]
-		network_input.append([note_to_int[char] for char in sequence_in])
-		network_output.append(note_to_int[sequence_out])
+	# get piano sequences
+	input_piano_sequences = []
+	output_piano_notes = []
 
-	n_patterns = len(network_input)
+	for s in songs:
+		piano_part = s[0]
+		for i in range(0, len(piano_part) - input_sequence_length):
+			sequence_in = piano_part[i:i + input_sequence_length]
+			note_out = piano_part[i + input_sequence_length]
 
-	# reshape the input into a format compatible with LSTM layers
-	network_input = np.reshape(network_input, (n_patterns, sequence_length, 1))
-	# normalize input
-	network_input = network_input / float(n_unique_notes)
+			input_piano_sequences.append(sequence_in)
+			output_piano_notes.append(to_one_hot(note_out, n_unique_notes))
 
-	network_output = to_one_hot(network_output, n_unique_notes)
+	pickle.dump(input_piano_sequences, open('pickle/architecture1/piano_inputs', 'wb'))
+	pickle.dump(output_piano_notes, open('pickle/architecture1/piano_outputs', 'wb'))
 
-	return (network_input, network_output)
+	# get bass and sax notes
+	input_bass_notes = [] # piano notes
+	output_bass_notes = []
 
-# converts array of values to a one-hot representation
-def to_one_hot(array, n_unique_notes):
-	x = np.zeros((len(array), n_unique_notes), dtype=np.int8)
-	x[np.arange(len(array)), array] = 1
+	input_sax_notes = [] # bass notes
+	output_sax_notes = []
+
+	for s in songs:
+		piano = s[0]
+		bass = s[1]
+		sax = s[2]
+
+		for i in range(len(piano)):
+			input_bass_notes.append(piano[i])
+			output_bass_notes.append(to_one_hot(bass[i], n_unique_notes))
+
+			input_sax_notes.append(bass[i])
+			output_bass_notes.append(to_one_hot(sax[i], n_unique_notes))
+
+	pickle.dump(input_bass_notes, open('pickle/architecture1/bass_inputs', 'wb'))
+	pickle.dump(output_bass_notes, open('pickle/architecture1/bass_outputs', 'wb'))
+
+	pickle.dump(input_sax_notes, open('pickle/architecture1/sax_inputs', 'wb'))
+	pickle.dump(output_sax_notes, open('pickle/architecture1/sax_outputs', 'wb'))
+
+	## arch 2
+
+	# piano inputs and outputs same as architecture 1
+	pickle.dump(input_piano_sequences, open('pickle/architecture2/piano_inputs', 'wb'))
+	pickle.dump(output_piano_notes, open('pickle/architecture2/piano_outputs', 'wb'))
+
+	# get bass notes (piano sequence to next bass note)
+	
+	input_bass_sequences = [] # piano sequences
+	output_bass_notes = []
+
+	for s in songs:
+		piano_part = s[0]
+		bass_part = s[1]
+
+		for i in range(0, len(piano_part) - input_sequence_length):
+			sequence_in = piano_part[i:i + input_sequence_length]
+			note_out = bass_part[i + input_sequence_length]
+
+			input_bass_sequences.append(sequence_in)
+			output_bass_notes.append(to_one_hot(note_out, n_unique_notes))
+
+	pickle.dump(input_bass_sequences, open('pickle/architecture2/bass_inputs', 'wb'))
+	pickle.dump(output_bass_notes, open('pickle/architecture2/bass_outputs', 'wb'))
+
+	# get sax
+
+	input_sax_sequences = [] # bass sequences
+	output_sax_notes = []
+
+	for s in songs:
+		bass_part = s[1]
+		sax_part = s[2]
+
+		for i in range(0, len(bass_part) - input_sequence_length):
+			sequence_in = bass_part[i:i + input_sequence_length]
+			note_out = bass_part[i + input_sequence_length]
+
+			input_sax_sequences.append(sequence_in)
+			output_sax_notes.append(to_one_hot(note_out, n_unique_notes))
+
+	pickle.dump(input_sax_sequences, open('pickle/architecture2/sax_inputs', 'wb'))
+	pickle.dump(output_sax_notes, open('pickle/architecture2/sax_outputs', 'wb'))
+
+	## arch 3
+
+	input_piano_sequences = []
+	output_piano_notes = []
+	output_bass_notes = []
+	output_sax_notes = []
+
+	for s in songs:
+		piano_part = s[0]
+		bass_part = s[1]
+		sax_part = s[2]
+
+		for i in range(0, len(piano_part) - input_sequence_length):
+			sequence_in = piano_part[i:i + input_sequence_length]
+			piano_note_out = piano_part[i + input_sequence_length]
+			bass_note_out = bass_part[i + input_sequence_length]
+			sax_note_out = sax_part[i + input_sequence_length]
+
+			input_piano_sequences.append(sequence_in)
+			output_piano_notes.append(to_one_hot(piano_note_out, n_unique_notes))
+			output_bass_notes.append(to_one_hot(bass_note_out, n_unique_notes))
+			output_sax_notes.append(to_one_hot(sax_note_out, n_unique_notes))
+
+	pickle.dump(input_piano_sequences, open('pickle/architecture3/piano_inputs', 'wb'))
+	pickle.dump(input_piano_sequences, open('pickle/architecture3/bass_inputs', 'wb'))
+	pickle.dump(input_piano_sequences, open('pickle/architecture3/sax_inputs', 'wb'))
+
+	pickle.dump(output_piano_notes, open('pickle/architecture3/piano_outputs', 'wb'))
+	pickle.dump(output_bass_notes, open('pickle/architecture3/bass_outputs', 'wb'))
+	pickle.dump(output_sax_notes, open('pickle/architecture3/sax_outputs', 'wb'))
+
+# converts value to a one-hot representation
+def to_one_hot(value, n_unique_notes):
+	x = np.zeros(n_unique_notes, dtype=np.int8)
+	x[int(value * n_unique_notes)] = 1
 	return x
 
 if __name__ == '__main__':
