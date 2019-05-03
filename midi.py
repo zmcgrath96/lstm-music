@@ -86,6 +86,10 @@ def get_notes(note_width=.25):
 # creates neural network inputs and outputs
 def prepare_sequences(songs, n_unique_notes, input_sequence_length=100):
 
+	os.mkdir('pickle/architecture1')
+	os.mkdir('pickle/architecture2')
+	os.mkdir('pickle/architecture3')
+
 	#TODO: figure out how to structure neural network inputs / outputs
 
 	## arch 1
