@@ -10,7 +10,7 @@ Zachary McGrath
 
 Ron Moore (https://github.com/ronmoore3)
 
-Kevin Ray (github.com/kray10)
+Kevin Ray (https://github.com/kray10)
 
 Matthew Taylor (https://github.com/mt3443)
 
