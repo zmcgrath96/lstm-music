@@ -4,12 +4,18 @@ from utils import *
 
 # PARAMETER: diction of songs for instrument
 def clean(songs, note_width):
-	num = 0
 	# get all of the unique combinations of notes and chords
 	# after saving all of the notes as embeddings in the enumerated_notes dict, 
 	# add all of the notes to the array for each song for each of the instruments
 	print('Getting encodings')
+	start_name = 'start'
+	end_name = 'end'
 	enumerated_notes = {}
+	rest_name = note.Rest().name
+	enumerated_notes[rest_name] = 0
+	enumerated_notes[start_name] = 1
+	enumerated_notes[end_name] = 2
+	num = 3
 	embedded = [[] for _ in range(len(songs))]
 	s_count = 0
 	for s in songs:
@@ -21,7 +27,8 @@ def clean(songs, note_width):
 			if len(songs[s]) < 3:
 				continue
 			notes = songs[s][inst].notesAndRests.activeElementList
-			embedded[s_count][i_count] = [0 for _ in range(scaled_s_l)]
+			embedded[s_count][i_count] = [enumerated_notes[start_name] if x < 100 else enumerated_notes[rest_name]  for x in range(scaled_s_l + 101)]
+			embedded[s_count][i_count][-1] = enumerated_notes[end_name]
 			n_count = 0
 			for i in range(1, len(notes)):
 				e_complete, off_n_count = get_all_in_offset(notes, i)
@@ -35,7 +42,7 @@ def clean(songs, note_width):
 					n_count += off_n_count
 			i_count += 1
 		s_count += 1
-
+	
 	print('done')
 	return enumerated_notes, embedded
 
