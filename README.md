@@ -6,7 +6,7 @@ EECS 738 Semester Project
 #### Authors
 Austin Irvine (https://github.com/austinirvine)
 
-Zachary McGrath
+Zachary McGrath (https://github.com/zmcgrath96)
 
 Ron Moore (https://github.com/ronmoore3)
 
@@ -14,7 +14,7 @@ Kevin Ray (https://github.com/kray10)
 
 Matthew Taylor (https://github.com/mt3443)
 
-### Data Sets
+### Data Set
 [Jazz MIDI dataset](https://www.kaggle.com/saikayala/jazz-ml-ready-midi)
 
 ## Installation
