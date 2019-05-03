@@ -16,16 +16,20 @@ def main():
 	if not exists:
 		sys.exit('Error: given directory "' + directory + '" does not exist')
 
-	# get list of all notes
-	notes = get_notes()
-
-	# get list of all unique notes
-	n_unique_notes = len(set(notes))
+	# get list note/chord/rest encodings
+	exists = os.path.isfile('pickle/' + directory + '_encodings') and os.path.isfile('pickle/' + directory + '_embedded')
+	if not exists:
+		encodings, embedded_songs = get_notes()
+	else:
+		encodings = pickle.load(open('pickle/' + directory + '_encodings', 'rb'))
+		embedded_songs = pickle.load(open('pickle/' + directory + '_embedded', 'rb'))
 
 	# create network inputs and outputs, x and y
 	# x = a specified sequence of notes (ex. first 10 notes)
 	# y = the next note in the sequence (ex. the 11th note)
-	x, y = prepare_sequences(notes, n_unique_notes)
+
+	# embedded songs order (piano -> bass -> sax)
+	x, y = prepare_sequences(embedded_songs)
 
 	pickle.dump(x, open('pickle/' + directory + '_inputs', 'wb'))
 	pickle.dump(y, open('pickle/' + directory + '_outputs', 'wb'))
@@ -33,9 +37,9 @@ def main():
 # returns a sequential list of all notes from all songs in ./classical directory
 def get_notes(note_width=.25):
 	# if pickled result exists, return that
-	exists = os.path.isfile('pickle/' + directory + '_notes')	
-	if exists:
-		return pickle.load(open('pickle/' + directory + '_notes', 'rb'))
+	# exists = os.path.isfile('pickle/' + directory + '_notes')	
+	# if exists:
+	# 	return pickle.load(open('pickle/' + directory + '_notes', 'rb'))
 
 	# if pickled result does not exist, create it and pickle it
 	piano = []
@@ -71,37 +75,46 @@ def get_notes(note_width=.25):
 	# get all of the unique combinations of notes and chords
 	# after saving all of the notes as embeddings in the enumerated_notes dict, 
 	# add all of the notes to the array for each song for each of the instruments
-	print('Getting all unique notes')
+	print('Getting encodings')
 	enumerated_notes = {}
-	embedded = [[] for _ in range(num_songs)]
+	embedded = [[] for _ in range(len(songs))]
 	s_count = 0
 	for s in songs:
 		embedded[s_count] = [[] for _ in range(3)]
 		s_l = max([len(songs[s][i]) for i in songs[s]])
 		scaled_s_l = math.ceil(s_l / note_width)
 		i_count = 0
-		for inst in songs[s]:
+		for inst in ('piano', 'bass', 'sax'):
+			if len(songs[s]) < 3:
+				continue
 			notes = songs[s][inst].notesAndRests.activeElementList
 			embedded[s_count][i_count] = [0 for _ in range(scaled_s_l)]
 			n_count = 0
 			for i in range(1, len(notes)):
 				e_complete, off_n_count = get_all_in_offset(notes, i)
-				if e_complete not in enumerated_notes:
-					enumerated_notes[e_complete] = num
-					num += 1
-				offset = notes[i].offset
-				if offset % note_width == 0:
-					embedded[s_count][i_count][n_count] = enumerated_notes[e_complete]
-				n_count += off_n_count
+				if e_complete != '':
+					if e_complete not in enumerated_notes:
+						enumerated_notes[e_complete] = num
+						num += 1
+					offset = notes[i].offset
+					if offset % note_width == 0:
+						embedded[s_count][i_count][n_count] = enumerated_notes[e_complete]
+					n_count += off_n_count
 			i_count += 1
 		s_count += 1
 
-	print(enumerated_notes)
 	print('done')
 
-	#pickle.dump(notes, open('pickle/' + directory + '_notes', 'wb'))
+	output = []
 
-	return notes
+	for s in embedded:
+		if len(s[2]) != 0:
+			output.append(s)
+
+	pickle.dump(enumerated_notes, open('pickle/' + directory + '_encodings', 'wb'))
+	pickle.dump(output, open('pickle/' + directory + '_embedded', 'wb'))
+
+	return enumerated_notes, output
 
 def get_all_in_offset(notes, i):
 	n = notes[i]
@@ -123,24 +136,18 @@ def get_all_in_offset(notes, i):
 
 	return stringify_notes(sort_notes(e_note)) + stringify_chords(sort_chords(e_chord)), j
 
-
 # creates neural network inputs and outputs
-def prepare_sequences(notes, n_unique_notes):
-	sequence_length = 100
+def prepare_sequences(songs, input_sequence_length=100):
 
-	# get all pitch names
-	pitchnames = sorted(set(item for item in notes))
-
-	# create a dictionary to map pitches to integers
-	note_to_int = dict((note, number) for number, note in enumerate(pitchnames))
+	#TODO: figure out how to structure neural network inputs / outputs
 
 	network_input = []
 	network_output = []
 
 	# create input sequences and the corresponding outputs
-	for i in range(0, len(notes) - sequence_length, 1):
-		sequence_in = notes[i:i + sequence_length]
-		sequence_out = notes[i + sequence_length]
+	for i in range(0, len(notes) - input_sequence_length, 1):
+		sequence_in = notes[i:i + input_sequence_length]
+		sequence_out = notes[i + input_sequence_length]
 		network_input.append([note_to_int[char] for char in sequence_in])
 		network_output.append(note_to_int[sequence_out])
 
