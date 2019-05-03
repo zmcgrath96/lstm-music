@@ -86,9 +86,17 @@ def get_notes(note_width=.25):
 # creates neural network inputs and outputs
 def prepare_sequences(songs, n_unique_notes, input_sequence_length=100):
 
-	os.mkdir('pickle/architecture1')
-	os.mkdir('pickle/architecture2')
-	os.mkdir('pickle/architecture3')
+	exists = os.path.isdir('pickle/architecture1')
+	if not exists:
+		os.mkdir('pickle/architecture1')
+
+	exists = os.path.isdir('pickle/architecture2')
+	if not exists:
+		os.mkdir('pickle/architecture2')
+
+	exists = os.path.isdir('pickle/architecture3')
+	if not exists:
+		os.mkdir('pickle/architecture3')
 
 	#TODO: figure out how to structure neural network inputs / outputs
 
