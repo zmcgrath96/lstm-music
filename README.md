@@ -1,16 +1,21 @@
 
 
-# Says One Neuron to Another
-Repository for EECS 738 Project Neural Network
+# Music Generation
+EECS 738 Semester Project
 
 #### Authors
-Austin Irvine (https://github.com/austinirvine), Zachary McGrath, Ron Moore (https://github.com/ronmoore3), Matthew Taylor (https://github.com/mt3443), Kevin Ray (github.com/kray10)
+Austin Irvine (https://github.com/austinirvine)
+
+Zachary McGrath
+
+Ron Moore (https://github.com/ronmoore3)
+
+Kevin Ray (github.com/kray10)
+
+Matthew Taylor (https://github.com/mt3443)
 
 ### Data Sets
 [Jazz MIDI dataset](https://www.kaggle.com/saikayala/jazz-ml-ready-midi)
-
-
-[Classical music source](http://www.piano-midi.de/)
 
 ## Installation
 
