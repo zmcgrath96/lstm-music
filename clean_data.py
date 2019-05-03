@@ -1,6 +1,7 @@
 from music21 import note, chord 
 import math
 from utils import *
+import numpy as np
 
 # PARAMETER: diction of songs for instrument
 def clean(songs, note_width):
@@ -27,8 +28,7 @@ def clean(songs, note_width):
 			if len(songs[s]) < 3:
 				continue
 			notes = songs[s][inst].notesAndRests.activeElementList
-			embedded[s_count][i_count] = [enumerated_notes[start_name] if x < 100 else enumerated_notes[rest_name]  for x in range(scaled_s_l + 101)]
-			embedded[s_count][i_count][-1] = enumerated_notes[end_name]
+			embedded[s_count][i_count] = [enumerated_notes[rest_name]  for x in range(scaled_s_l)]
 			n_count = 0
 			for i in range(1, len(notes)):
 				e_complete, off_n_count = get_all_in_offset(notes, i)
@@ -40,9 +40,16 @@ def clean(songs, note_width):
 					if offset % note_width == 0:
 						embedded[s_count][i_count][n_count] = enumerated_notes[e_complete]
 					n_count += off_n_count
+			embedded[s_count][i_count] = [enumerated_notes[start_name]] * 100 + embedded[s_count][i_count] + [enumerated_notes[end_name]]
 			i_count += 1
 		s_count += 1
 	
+	# normalize data. can't make a numpy matrix so we gotta do it manually
+	for s in range(len(embedded)):
+		for i in range(len(embedded[s])):
+			for n in range(len(embedded[s][i])):
+				embedded[s][i][n] /= len(enumerated_notes)
+
 	print('done')
 	return enumerated_notes, embedded
 
