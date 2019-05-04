@@ -43,6 +43,7 @@ def get_notes(note_width=.25):
 	piano = []
 	bass = []
 	sax = []
+	song_lens = []
 	songs = {}
 	num_songs = 0
 	for file in glob.glob(directory + "/*.mid"):
@@ -57,6 +58,7 @@ def get_notes(note_width=.25):
 		num_songs += 1
 		songs[file] = {}
 		instruments = instrument.partitionByInstrument(midi)
+		song_lens.append(midi.highestTime)
 		for i in instruments:
 			name = i.getInstrument().instrumentName
 			if name == 'Piano':
@@ -69,12 +71,12 @@ def get_notes(note_width=.25):
 				songs[file]['sax'] = i
 				sax.append(i)
 
-	enumerated_notes, embedded = clean(songs, note_width)
+	enumerated_notes, embedded = clean(songs, song_lens, note_width)
 
 	output = []
 
 	for s in embedded:
-		if len(s[2]) != 0:
+		if len(s) == 3:
 			output.append(s)
 
 	pickle.dump(enumerated_notes, open('pickle/' + directory + '_encodings', 'wb'))
