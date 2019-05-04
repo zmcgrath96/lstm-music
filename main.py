@@ -174,6 +174,8 @@ def generate_arch_2(length):
 	piano_model_path = get_last_model_path('piano', 2)
 	bass_model_path = get_last_model_path('bass', 2)
 	sax_model_path = get_last_model_path('sax', 2)
+	bass_dist = np.load('models/architecture1/bass-dist.npy')
+	num_classes = len(bass_dist)
 
 	# load models and distributions
 	piano_lstm = musicLSTM(filepath=piano_model_path)
@@ -227,6 +229,8 @@ def generate_arch_3(length):
 	piano_lstm = musicLSTM(filepath=piano_model_path)
 	bass_lstm = musicLSTM(filepath=bass_model_path)
 	sax_lstm = musicLSTM(filepath=sax_model_path)
+	bass_dist = np.load('models/architecture1/bass-dist.npy')
+	num_classes = len(bass_dist)
 
 	# set up outputs
 	piano_out = []
