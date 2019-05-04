@@ -73,7 +73,7 @@ def main(args):
 
 			# train 
 			lstm = musicLSTM(in_shape, out_shape)
-			lstm.train(sax_in, sax_out, path + name, it=10, batch=64)
+			lstm.train(sax_in, sax_out, path + name, it=20, batch=64)
 		else:
 			sax_dist = create_prob_dict(sax_in, sax_out)
 			np.save(path + '/sax-dist', sax_dist)

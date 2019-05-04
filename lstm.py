@@ -9,6 +9,7 @@ class musicLSTM:
         if filepath is None:
             self.model = Sequential()
             self.model.add(LSTM(256, input_shape=in_shape, return_sequences=True))
+            self.model.add(Dropout(0.3))
             self.model.add(LSTM(256))
             self.model.add(Dropout(0.3))
             self.model.add(Dense(out_size))
