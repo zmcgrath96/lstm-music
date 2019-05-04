@@ -4,7 +4,7 @@ import sys
 import pickle
 
 def main(args):
-	if '-t=p' in args[0]:
+	if '-t' in args[0]:
 
 		# get inputs and outputs
 		piano_in, piano_out = get_input_and_output(0)
@@ -15,9 +15,7 @@ def main(args):
 
 		# train 
 		lstm = musicLSTM(in_shape, out_shape)
-		lstm.train(piano_in, piano_out, 'piano_lstm.h5', it=50)
-	
-	elif '-t=b' in args[0]:
+		lstm.train(piano_in, piano_out, 'piano_lstm.h5', it=10)
 
 		# get inputs and outputs
 		bass_in, bass_out = get_input_and_output(1)
@@ -28,9 +26,7 @@ def main(args):
 
 		# train 
 		lstm = musicLSTM(in_shape, out_shape)
-		lstm.train(bass_in, bass_out, 'bass_lstm.h5', it=50)
-	
-	elif '-t=s' in args[0]:
+		lstm.train(bass_in, bass_out, 'bass_lstm.h5', it=10)
 
 		# get inputs and outputs
 		sax_in, sax_out = get_input_and_output(1)
@@ -41,7 +37,7 @@ def main(args):
 
 		# train 
 		lstm = musicLSTM(in_shape, out_shape)
-		lstm.train(bass_in, bass_out, 'sax_lstm.h5', it=50)
+		lstm.train(bass_in, bass_out, 'sax_lstm.h5', it=10)
 
 	elif '-g' in args[0]:
 		
