@@ -18,7 +18,6 @@ def create_part(prediction_output, instrumentType):
 	output_notes = []
 
 	for pattern in prediction_output:
-		pattern = get_note(pattern)
 
 		# pattern is invalid (start or end symbol)
 		if pattern == 1 or pattern == 2:
@@ -27,15 +26,17 @@ def create_part(prediction_output, instrumentType):
 		# pattern is a rest
 		if pattern == 0:
 			new_note = note.Rest()
-
-		# pattern is a chord
-		if (',' in pattern) or pattern.isdigit():
-			notes_in_chord = pattern.split(',')
-			new_note = chord.Chord(notes_in_chord)
-
-		# pattern is a note
 		else:
-			new_note = note.Note(pattern)
+			pattern = get_note(pattern)		
+			
+			# pattern is a chord
+			if (',' in pattern) or pattern.isdigit():
+				notes_in_chord = pattern.split(',')
+				new_note = chord.Chord(notes_in_chord)
+
+			# pattern is a note
+			else:
+				new_note = note.Note(pattern)
 
 		# assign instrument
 		if instrumentType == 'piano':
