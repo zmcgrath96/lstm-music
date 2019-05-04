@@ -95,6 +95,8 @@ def main(args):
 		elif arch is 3:
 			song = generate_arch_3(song_length)
 
+		print(song)
+
 def get_input_and_output(inst, arch):
 	# load embeddings and encodings
 	arch_path = 'pickle/architecture{}/{}_'.format(arch, inst)
@@ -133,19 +135,21 @@ def generate_arch_1(length):
 	num_classes = len(bass_dist)
 
 	# set up outputs
-	piano_out = np.zeros(length)
-	bass_out = np.zeros(length)
-	sax_out = np.zeros(length)
+	piano_out = []
+	bass_out = []
+	sax_out = []
 
-	for i in piano_input(length):
+	for i in piano_input(length * 4):
 		p_out = np.argmax(piano_lstm.predict(piano_input)[0])
-		piano_out[i] = p_out
+		piano_out.append(p_out)
 		b_out = np.random.choice(num_classes, p=bass_dist[p_out])
-		bass_out[i] = b_out
+		bass_out.append(b_out)
 		s_out = np.random.choice(num_classes, p=sax_dist[b_out])
-		sax_out[i] = s_out
+		sax_out.append(s_out)
 		piano_input = np.roll(piano_input, -1, axis=1)
 		piano_input[-1] = p_out
+		if p_out is 2:
+			break
 
 	return [piano_out, bass_out, sax_out]
 	
@@ -166,22 +170,24 @@ def generate_arch_2(length):
 	sax_lstm = musicLSTM(filepath=sax_model_path)
 
 	# set up outputs
-	piano_out = np.zeros(length)
-	bass_out = np.zeros(length)
-	sax_out = np.zeros(length)
+	piano_out = []
+	bass_out = []
+	sax_out = []
 
 	# generate output
-	for i in range(length):
+	for i in range(length * 4):
 		p_out = np.argmax(piano_lstm.predict(piano_input)[0])
-		piano_out[i] = p_out
+		piano_out.append(p_out)
 		b_out = np.argmax(bass_lstm.predict(piano_input)[0])
-		bass_out[i] = b_out
+		bass_out.append(b_out)
 		s_out = np.argmax(sax_lstm.predict(bass_input)[0])
-		sax_out[i] = s_out
+		sax_out.append(s_out)
 		piano_input = np.roll(piano_input, -1, axis=1)
 		piano_input[-1] = p_out
 		bass_input = np.roll(bass_input, -1, axis=1)
 		bass_input[-1] = b_out
+		if p_out is 2:
+			break
 
 	return [piano_out, bass_out, sax_out]
 
@@ -200,18 +206,18 @@ def generate_arch_3(length):
 	sax_lstm = musicLSTM(filepath=sax_model_path)
 
 	# set up outputs
-	piano_out = np.zeros(length)
-	bass_out = np.zeros(length)
-	sax_out = np.zeros(length)
+	piano_out = []
+	bass_out = []
+	sax_out = []
 
 	# generate output
-	for i in range(length):
+	for i in range(length * 4):
 		p_out = np.argmax(piano_lstm.predict(piano_input)[0])
-		piano_out[i] = p_out
+		piano_out.append(p_out)
 		b_out = np.argmax(bass_lstm.predict(piano_input)[0])
-		bass_out[i] = b_out
+		bass_out.append(b_out)
 		s_out = np.argmax(sax_lstm.predict(piano_input)[0])
-		sax_out[i] = s_out
+		sax_out.append(s_out)
 		piano_input = np.roll(piano_input, -1, axis=1)
 		piano_input[-1] = p_out
 
