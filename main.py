@@ -20,7 +20,7 @@ def main(args):
 		
 		# get inputs and outputs
 		piano_in, piano_out = get_input_and_output('piano', arch)
-
+		print(piano_in.shape)
 		# get shapes for input and output
 		in_shape = (piano_in.shape[1], piano_in.shape[2])
 		out_shape = piano_out.shape[1]
@@ -103,7 +103,7 @@ def get_input_and_output(inst, arch):
 	arch_path = 'pickle/architecture{}/{}_'.format(arch, inst)
 	inst_input = pickle.load(open(arch_path + 'inputs', 'rb'))
 	inst_output = pickle.load(open(arch_path + 'outputs', 'rb'))
-	if inst is not 'piano' and arch is not 1:
+	if inst is 'piano' or (inst is not 'piano' and arch is not 1):
 		inst_input = np.array(inst_input).reshape((len(inst_input), 100, 1))
 		inst_output = np.array(inst_output).reshape((len(inst_output), len(inst_output[0])))
 	else:
