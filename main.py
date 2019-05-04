@@ -31,7 +31,7 @@ def main(args):
 		if not os.path.exists(path):
 			os.makedirs(path)
 		lstm = musicLSTM(in_shape, out_shape)
-		lstm.train(piano_in, piano_out, path + name, it=10, batch=64)
+		lstm.train(piano_in, piano_out, path + name, it=20, batch=64)
 
 	elif '-t=bass' in args:
 		# get inputs and outputs
@@ -50,7 +50,7 @@ def main(args):
 
 			# train 
 			lstm = musicLSTM(in_shape, out_shape)
-			lstm.train(bass_in, bass_out, path + name, it=10, batch=64)
+			lstm.train(bass_in, bass_out, path + name, it=20, batch=64)
 		else:
 			bass_dist = create_prob_dict(bass_in, bass_out)
 			np.save(path + '/bass-dist', bass_dist)
