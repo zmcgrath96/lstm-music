@@ -204,7 +204,7 @@ def generate_arch_2(length):
 
 	return [piano_out, bass_out, sax_out]
 
-def generate_arch_3(input, length):
+def generate_arch_3(length):
 	# load piano input to seed with
 	piano_input = pickle.load(open('pickle/architecture3/piano_inputs', 'rb'))
 	piano_input = np.array(piano_input).reshape((len(piano_input), 100, 1))
