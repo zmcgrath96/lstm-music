@@ -3,8 +3,10 @@ import numpy as np
 import sys
 import pickle
 import os
+from create_song import create_song
 
 def main(args):
+	# determine which architecture to use
 	arch = [s for s in args if '-arch=' in s]
 	if len(arch) is not 1:
 		print('Error: only one -arch= parameter is allowed')
@@ -94,7 +96,7 @@ def main(args):
 		elif arch is 3:
 			song = generate_arch_3(song_length)
 
-		print(song)
+		create_song(song, 'output.mid')
 
 def get_input_and_output(inst, arch):
 	# load embeddings and encodings
