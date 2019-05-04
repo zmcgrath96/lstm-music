@@ -9,7 +9,6 @@ class musicLSTM:
         if filepath is None:
             self.model = Sequential()
             self.model.add(LSTM(256, input_shape=in_shape, return_sequences=True))
-            self.model.add(Dropout(0.3))
             self.model.add(LSTM(256))
             self.model.add(Dropout(0.3))
             self.model.add(Dense(out_size))
@@ -20,9 +19,9 @@ class musicLSTM:
         else:
             self.model = load_model(filepath)
 
-    def train(self, input, output, name, it=200, batch=64):
-        filepath = 'models/' + name + "-{epoch:02d}-{val_acc:.2f}.hdf5"
-        checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=False, mode='max')
+    def train(self, input, output, filepath, it=200, batch=64):
+        filepath += "-{epoch:02d}.hdf5"
+        checkpoint = ModelCheckpoint(filepath)
         self.model.fit(input, output, epochs=it, batch_size=batch, callbacks=[checkpoint])
 
     def predict(self, input):
