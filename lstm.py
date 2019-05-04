@@ -5,10 +5,7 @@ class musicLSTM:
 
     def __init__(self, in_shape, out_size):
         self.model = Sequential()
-        self.model.add(Masking(mask_value=-1, input_shape=(in_shape[0], in_shape[1])))
-        self.model.add(LSTM(256, return_sequences=True))
-        self.model.add(Dropout(0.3))
-        self.model.add(LSTM(512, return_sequences=True))
+        self.model.add(LSTM(256, input_shape=in_shape, return_sequences=True))
         self.model.add(Dropout(0.3))
         self.model.add(LSTM(256))
         self.model.add(Dropout(0.3))
