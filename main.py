@@ -1,4 +1,3 @@
-
 from lstm import musicLSTM
 import numpy as np
 import sys
@@ -12,7 +11,7 @@ def main(args):
 		sys.exit(1)
 	arch = int(arch[0].split('=')[1])
 	if arch > 3 or arch < 1:
-		print('Error: arch must be from 1 to 3')
+		print('Error: arch must be 1, 2, or 3')
 		sys.exit(1)
 
 	if '-t=piano' in args:
@@ -100,21 +99,31 @@ def main(args):
 def get_input_and_output(inst, arch):
 	# load embeddings and encodings
 	arch_path = 'pickle/architecture{}/{}_'.format(arch, inst)
-	input = pickle.load(open(arch_path + 'inputs', 'rb'))
-	output = pickle.load(open(arch_path + 'outputs', 'rb'))
+	inst_input = pickle.load(open(arch_path + 'inputs', 'rb'))
+	inst_output = pickle.load(open(arch_path + 'outputs', 'rb'))
 	if inst is not 'piano' and arch is not 1:
-		input = np.array(input).reshape((len(input), 100, 1))
-		output = np.array(output).reshape((len(output), len(output[0])))
+		inst_input = np.array(inst_input).reshape((len(inst_input), 100, 1))
+		inst_output = np.array(inst_output).reshape((len(inst_output), len(inst_output[0])))
 	else:
-		input = (np.array(input) * len(output[0])).astype(int)
-	return input, output
+		inst_input = (np.array(inst_input) * len(inst_output[0])).astype(int)
+	return inst_input, inst_output
 
-def create_prob_dict(input, output):
-	prob_dist = np.zeros((len(output[0]), len(output[0])))
-	output_max = np.argmax(np.array(output), axis=1)
-	for in_note, out_note in zip(input, output_max):
+def create_prob_dict(inst_input, inst_output):
+
+	# create empty distribution
+	prob_dist = np.zeros((len(inst_output[0]), len(inst_output[0])))
+
+	# create an array of outputs without one hot
+	output_max = np.argmax(np.array(inst_output), axis=1)
+
+	# iterate through in and out and increment probabilty
+	for in_note, out_note in zip(inst_input, output_max):
 		prob_dist[in_note, out_note] += 1
+	
+	# sum each row of distribution
 	sums = np.sum(prob_dist, axis=1)
+
+	# normalize the distributions
 	for i in range(len(prob_dist)):
 		if sums[i] > 0.0:
 			prob_dist[i,:] = prob_dist[i,:] / sums[i]
