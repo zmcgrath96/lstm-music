@@ -135,7 +135,7 @@ def prepare_sequences(songs, n_unique_notes, input_sequence_length=100):
 			output_bass_notes.append(to_one_hot(bass[i], n_unique_notes))
 
 			input_sax_notes.append(bass[i])
-			output_bass_notes.append(to_one_hot(sax[i], n_unique_notes))
+			output_sax_notes.append(to_one_hot(sax[i], n_unique_notes))
 
 	pickle.dump(input_bass_notes, open('pickle/architecture1/bass_inputs', 'wb'))
 	pickle.dump(output_bass_notes, open('pickle/architecture1/bass_outputs', 'wb'))
