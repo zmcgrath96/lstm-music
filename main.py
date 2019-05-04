@@ -53,7 +53,7 @@ def main(args):
 		if not os.path.exists(path):
 			os.makedirs(path)
 		lstm = musicLSTM(in_shape, out_shape)
-		lstm.train(bass_in, bass_out, path + name, it=10, batch=64)
+		lstm.train(sax_in, sax_out, path + name, it=10, batch=64)
 
 	elif '-g' in args[0]:
 		
