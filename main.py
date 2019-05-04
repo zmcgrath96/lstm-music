@@ -121,13 +121,9 @@ def create_prob_dict(input, output):
 	return prob_dist
 
 def generate_arch_1(length):
-	# load input to seed with. this is always piano
-	piano_input = pickle.load(open('pickle/architecture1/piano_inputs', 'rb'))
-	piano_input = np.array(piano_input).reshape((len(piano_input), 100, 1))
-
-	# take a random sample from it
-	np.random.shuffle(piano_input)
-	piano_input = piano_input[0].reshape((1, 100, 1))
+	
+	# create input and fill with 1's
+	piano_input = np.array((1, 100, 1)).fill(1)
 	
 	# load models and distributions
 	piano_model_path = get_last_model_path('piano', 1)
@@ -148,31 +144,16 @@ def generate_arch_1(length):
 		bass_out[i] = b_out
 		s_out = np.random.choice(num_classes, p=sax_dist[b_out])
 		sax_out[i] = s_out
-		piano_input = np.roll(piano_input, -1)
+		piano_input = np.roll(piano_input, -1, axis=1)
 		piano_input[-1] = p_out
 
 	return [piano_out, bass_out, sax_out]
 	
 
 def generate_arch_2(length):
-	# load piano input to seed with
-	piano_input = pickle.load(open('pickle/architecture2/piano_inputs', 'rb'))
-	piano_input = np.array(piano_input).reshape((len(piano_input), 100, 1))
-
-	# load bass input to seed with
-	bass_input = pickle.load(open('pickle/architecture2/bass_inputs', 'rb'))
-	bass_input = np.array(bass_input).reshape((len(bass_input), 100, 1))
-
-	# merge the two for shuffling
-	combo_input = np.zeros((piano_input.shape[0], 2, 100, 1))
-	for i in range(combo_input.shape[0]):
-		combo_input[i,0,:,:] += piano_input[i,:,:]
-		combo_input[i,1,:,:] += bass_input[i,:,:]
-	
-	# take a random sample from it
-	np.random.shuffle(combo_input)
-	piano_input = combo_input[0,0].reshape((1, 100, 1))
-	bass_input = combo_input[0,1].reshape((1, 100, 1))
+	# create input and fill with 1's
+	piano_input = np.array((1, 100, 1)).fill(1)
+	bass_input = np.array((1, 100, 1)).fill(1)
 	
 	# get paths to most recent models
 	piano_model_path = get_last_model_path('piano', 2)
@@ -197,21 +178,16 @@ def generate_arch_2(length):
 		bass_out[i] = b_out
 		s_out = np.argmax(sax_lstm.predict(bass_input)[0])
 		sax_out[i] = s_out
-		piano_input = np.roll(piano_input, -1)
+		piano_input = np.roll(piano_input, -1, axis=1)
 		piano_input[-1] = p_out
-		bass_input = np.roll(bass_input, -1)
+		bass_input = np.roll(bass_input, -1, axis=1)
 		bass_input[-1] = b_out
 
 	return [piano_out, bass_out, sax_out]
 
 def generate_arch_3(length):
-	# load piano input to seed with
-	piano_input = pickle.load(open('pickle/architecture3/piano_inputs', 'rb'))
-	piano_input = np.array(piano_input).reshape((len(piano_input), 100, 1))
-
-	# take a random sample from it
-	np.random.shuffle(piano_input)
-	piano_input = piano_input[0,0].reshape((1, 100, 1))
+	# create input and fill with 1's
+	piano_input = np.array((1, 100, 1)).fill(1)
 
 	# get paths to most recent models
 	piano_model_path = get_last_model_path('piano', 3)
@@ -236,7 +212,7 @@ def generate_arch_3(length):
 		bass_out[i] = b_out
 		s_out = np.argmax(sax_lstm.predict(piano_input)[0])
 		sax_out[i] = s_out
-		piano_input = np.roll(piano_input, -1)
+		piano_input = np.roll(piano_input, -1, axis=1)
 		piano_input[-1] = p_out
 
 	return [piano_out, bass_out, sax_out]
