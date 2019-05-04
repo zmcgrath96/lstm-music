@@ -3,7 +3,7 @@ from lstm import musicLSTM
 import numpy as np
 import sys
 import pickle
-import os, glob
+import os
 
 def main(args):
 	arch = [s for s in args if '-arch=' in s]
