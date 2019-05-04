@@ -210,8 +210,8 @@ def generate_arch_3(input, length):
 	piano_input = np.array(piano_input).reshape((len(piano_input), 100, 1))
 
 	# take a random sample from it
-	np.random.shuffle(combo_input)
-	piano_input = combo_input[0,0].reshape((1, 100, 1))
+	np.random.shuffle(piano_input)
+	piano_input = piano_input[0,0].reshape((1, 100, 1))
 
 	# get paths to most recent models
 	piano_model_path = get_last_model_path('piano', 3)
