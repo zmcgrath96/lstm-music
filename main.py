@@ -1,4 +1,3 @@
-
 from lstm import musicLSTM
 import numpy as np
 import sys
@@ -12,7 +11,7 @@ def main(args):
 		sys.exit(1)
 	arch = int(arch[0].split('=')[1])
 	if arch > 3 or arch < 1:
-		print('Error: arch must be from 1 to 3')
+		print('Error: arch must be 1, 2, or 3')
 		sys.exit(1)
 
 	if '-t=piano' in args:
@@ -95,24 +94,36 @@ def main(args):
 		elif arch is 3:
 			song = generate_arch_3(song_length)
 
+		print(song)
+
 def get_input_and_output(inst, arch):
 	# load embeddings and encodings
 	arch_path = 'pickle/architecture{}/{}_'.format(arch, inst)
-	input = pickle.load(open(arch_path + 'inputs', 'rb'))
-	output = pickle.load(open(arch_path + 'outputs', 'rb'))
+	inst_input = pickle.load(open(arch_path + 'inputs', 'rb'))
+	inst_output = pickle.load(open(arch_path + 'outputs', 'rb'))
 	if inst is not 'piano' and arch is not 1:
-		input = np.array(input).reshape((len(input), 100, 1))
-		output = np.array(output).reshape((len(output), len(output[0])))
+		inst_input = np.array(inst_input).reshape((len(inst_input), 100, 1))
+		inst_output = np.array(inst_output).reshape((len(inst_output), len(inst_output[0])))
 	else:
-		input = (np.array(input) * len(output[0])).astype(int)
-	return input, output
+		inst_input = (np.array(inst_input) * len(inst_output[0])).astype(int)
+	return inst_input, inst_output
 
-def create_prob_dict(input, output):
-	prob_dist = np.zeros((len(output[0]), len(output[0])))
-	output_max = np.argmax(np.array(output), axis=1)
-	for in_note, out_note in zip(input, output_max):
+def create_prob_dict(inst_input, inst_output):
+
+	# create empty distribution
+	prob_dist = np.zeros((len(inst_output[0]), len(inst_output[0])))
+
+	# create an array of outputs without one hot
+	output_max = np.argmax(np.array(inst_output), axis=1)
+
+	# iterate through in and out and increment probabilty
+	for in_note, out_note in zip(inst_input, output_max):
 		prob_dist[in_note, out_note] += 1
+	
+	# sum each row of distribution
 	sums = np.sum(prob_dist, axis=1)
+
+	# normalize the distributions
 	for i in range(len(prob_dist)):
 		if sums[i] > 0.0:
 			prob_dist[i,:] = prob_dist[i,:] / sums[i]
@@ -121,13 +132,9 @@ def create_prob_dict(input, output):
 	return prob_dist
 
 def generate_arch_1(length):
-	# load input to seed with. this is always piano
-	piano_input = pickle.load(open('pickle/architecture1/piano_inputs', 'rb'))
-	piano_input = np.array(piano_input).reshape((len(piano_input), 100, 1))
-
-	# take a random sample from it
-	np.random.shuffle(piano_input)
-	piano_input = piano_input[0].reshape((1, 100, 1))
+	
+	# create input and fill with 1's
+	piano_input = np.full((1, 100, 1), 1)
 	
 	# load models and distributions
 	piano_model_path = get_last_model_path('piano', 1)
@@ -137,47 +144,47 @@ def generate_arch_1(length):
 	num_classes = len(bass_dist)
 
 	# set up outputs
-	piano_out = np.zeros(length)
-	bass_out = np.zeros(length)
-	sax_out = np.zeros(length)
+	piano_out = []
+	bass_out = []
+	sax_out = []
 
-	for i in piano_input(length):
-		p_out = np.argmax(piano_lstm.predict(piano_input)[0])
-		piano_out[i] = p_out
+	for _ in range(50):
+		p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
+		piano_out.append(p_out)
 		b_out = np.random.choice(num_classes, p=bass_dist[p_out])
-		bass_out[i] = b_out
+		bass_out.append(b_out)
 		s_out = np.random.choice(num_classes, p=sax_dist[b_out])
-		sax_out[i] = s_out
-		piano_input = np.roll(piano_input, -1)
+		sax_out.append(s_out)
+		piano_input = np.roll(piano_input, -1, axis=1)
 		piano_input[-1] = p_out
+
+
+	for _ in range(50, length * 4):
+		p_out = np.argmax(piano_lstm.predict(piano_input)[0])
+		piano_out.append(p_out)
+		b_out = np.random.choice(num_classes, p=bass_dist[p_out])
+		bass_out.append(b_out)
+		s_out = np.random.choice(num_classes, p=sax_dist[b_out])
+		sax_out.append(s_out)
+		piano_input = np.roll(piano_input, -1, axis=1)
+		piano_input[-1] = p_out
+		if p_out is 2:
+			break
 
 	return [piano_out, bass_out, sax_out]
 	
 
 def generate_arch_2(length):
-	# load piano input to seed with
-	piano_input = pickle.load(open('pickle/architecture2/piano_inputs', 'rb'))
-	piano_input = np.array(piano_input).reshape((len(piano_input), 100, 1))
-
-	# load bass input to seed with
-	bass_input = pickle.load(open('pickle/architecture2/bass_inputs', 'rb'))
-	bass_input = np.array(bass_input).reshape((len(bass_input), 100, 1))
-
-	# merge the two for shuffling
-	combo_input = np.zeros((piano_input.shape[0], 2, 100, 1))
-	for i in range(combo_input.shape[0]):
-		combo_input[i,0,:,:] += piano_input[i,:,:]
-		combo_input[i,1,:,:] += bass_input[i,:,:]
-	
-	# take a random sample from it
-	np.random.shuffle(combo_input)
-	piano_input = combo_input[0,0].reshape((1, 100, 1))
-	bass_input = combo_input[0,1].reshape((1, 100, 1))
+	# create input and fill with 1's
+	piano_input = np.array((1, 100, 1)).fill(1)
+	bass_input = np.array((1, 100, 1)).fill(1)
 	
 	# get paths to most recent models
 	piano_model_path = get_last_model_path('piano', 2)
 	bass_model_path = get_last_model_path('bass', 2)
 	sax_model_path = get_last_model_path('sax', 2)
+	bass_dist = np.load('models/architecture1/bass-dist.npy')
+	num_classes = len(bass_dist)
 
 	# load models and distributions
 	piano_lstm = musicLSTM(filepath=piano_model_path)
@@ -185,33 +192,42 @@ def generate_arch_2(length):
 	sax_lstm = musicLSTM(filepath=sax_model_path)
 
 	# set up outputs
-	piano_out = np.zeros(length)
-	bass_out = np.zeros(length)
-	sax_out = np.zeros(length)
+	piano_out = []
+	bass_out = []
+	sax_out = []
 
 	# generate output
-	for i in range(length):
-		p_out = np.argmax(piano_lstm.predict(piano_input)[0])
-		piano_out[i] = p_out
+	for _ in range(50):
+		p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
+		piano_out.append(p_out)
 		b_out = np.argmax(bass_lstm.predict(piano_input)[0])
-		bass_out[i] = b_out
+		bass_out.append(b_out)
 		s_out = np.argmax(sax_lstm.predict(bass_input)[0])
-		sax_out[i] = s_out
-		piano_input = np.roll(piano_input, -1)
+		sax_out.append(s_out)
+		piano_input = np.roll(piano_input, -1, axis=1)
 		piano_input[-1] = p_out
-		bass_input = np.roll(bass_input, -1)
+		bass_input = np.roll(bass_input, -1, axis=1)
 		bass_input[-1] = b_out
+	
+	for _ in range(50, length * 4):
+		p_out = np.argmax(piano_lstm.predict(piano_input)[0])
+		piano_out.append(p_out)
+		b_out = np.argmax(bass_lstm.predict(piano_input)[0])
+		bass_out.append(b_out)
+		s_out = np.argmax(sax_lstm.predict(bass_input)[0])
+		sax_out.append(s_out)
+		piano_input = np.roll(piano_input, -1, axis=1)
+		piano_input[-1] = p_out
+		bass_input = np.roll(bass_input, -1, axis=1)
+		bass_input[-1] = b_out
+		if p_out is 2:
+			break
 
 	return [piano_out, bass_out, sax_out]
 
 def generate_arch_3(length):
-	# load piano input to seed with
-	piano_input = pickle.load(open('pickle/architecture3/piano_inputs', 'rb'))
-	piano_input = np.array(piano_input).reshape((len(piano_input), 100, 1))
-
-	# take a random sample from it
-	np.random.shuffle(piano_input)
-	piano_input = piano_input[0,0].reshape((1, 100, 1))
+	# create input and fill with 1's
+	piano_input = np.array((1, 100, 1)).fill(1)
 
 	# get paths to most recent models
 	piano_model_path = get_last_model_path('piano', 3)
@@ -222,22 +238,36 @@ def generate_arch_3(length):
 	piano_lstm = musicLSTM(filepath=piano_model_path)
 	bass_lstm = musicLSTM(filepath=bass_model_path)
 	sax_lstm = musicLSTM(filepath=sax_model_path)
+	bass_dist = np.load('models/architecture1/bass-dist.npy')
+	num_classes = len(bass_dist)
 
 	# set up outputs
-	piano_out = np.zeros(length)
-	bass_out = np.zeros(length)
-	sax_out = np.zeros(length)
+	piano_out = []
+	bass_out = []
+	sax_out = []
 
 	# generate output
-	for i in range(length):
-		p_out = np.argmax(piano_lstm.predict(piano_input)[0])
-		piano_out[i] = p_out
+	for _ in range(50):
+		p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
+		piano_out.append(p_out)
 		b_out = np.argmax(bass_lstm.predict(piano_input)[0])
-		bass_out[i] = b_out
+		bass_out.append(b_out)
 		s_out = np.argmax(sax_lstm.predict(piano_input)[0])
-		sax_out[i] = s_out
-		piano_input = np.roll(piano_input, -1)
+		sax_out.append(s_out)
+		piano_input = np.roll(piano_input, -1, axis=1)
 		piano_input[-1] = p_out
+
+	for _ in range(50, length * 4):
+		p_out = np.argmax(piano_lstm.predict(piano_input)[0])
+		piano_out.append(p_out)
+		b_out = np.argmax(bass_lstm.predict(piano_input)[0])
+		bass_out.append(b_out)
+		s_out = np.argmax(sax_lstm.predict(piano_input)[0])
+		sax_out.append(s_out)
+		piano_input = np.roll(piano_input, -1, axis=1)
+		piano_input[-1] = p_out
+		if p_out is 2:
+			break
 
 	return [piano_out, bass_out, sax_out]
 
