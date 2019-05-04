@@ -125,7 +125,7 @@ def create_prob_dict(input, output):
 def generate_arch_1(length):
 	
 	# create input and fill with 1's
-	piano_input = np.array((1, 100, 1)).fill(1)
+	piano_input = np.full((1, 100, 1), 1)
 	
 	# load models and distributions
 	piano_model_path = get_last_model_path('piano', 1)
@@ -139,7 +139,18 @@ def generate_arch_1(length):
 	bass_out = []
 	sax_out = []
 
-	for i in piano_input(length * 4):
+	for _ in range(50):
+		p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
+		piano_out.append(p_out)
+		b_out = np.random.choice(num_classes, p=bass_dist[p_out])
+		bass_out.append(b_out)
+		s_out = np.random.choice(num_classes, p=sax_dist[b_out])
+		sax_out.append(s_out)
+		piano_input = np.roll(piano_input, -1, axis=1)
+		piano_input[-1] = p_out
+
+
+	for _ in range(50, length * 4):
 		p_out = np.argmax(piano_lstm.predict(piano_input)[0])
 		piano_out.append(p_out)
 		b_out = np.random.choice(num_classes, p=bass_dist[p_out])
@@ -175,7 +186,19 @@ def generate_arch_2(length):
 	sax_out = []
 
 	# generate output
-	for i in range(length * 4):
+	for _ in range(50):
+		p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
+		piano_out.append(p_out)
+		b_out = np.argmax(bass_lstm.predict(piano_input)[0])
+		bass_out.append(b_out)
+		s_out = np.argmax(sax_lstm.predict(bass_input)[0])
+		sax_out.append(s_out)
+		piano_input = np.roll(piano_input, -1, axis=1)
+		piano_input[-1] = p_out
+		bass_input = np.roll(bass_input, -1, axis=1)
+		bass_input[-1] = b_out
+	
+	for _ in range(50, length * 4):
 		p_out = np.argmax(piano_lstm.predict(piano_input)[0])
 		piano_out.append(p_out)
 		b_out = np.argmax(bass_lstm.predict(piano_input)[0])
@@ -211,7 +234,17 @@ def generate_arch_3(length):
 	sax_out = []
 
 	# generate output
-	for i in range(length * 4):
+	for _ in range(50):
+		p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
+		piano_out.append(p_out)
+		b_out = np.argmax(bass_lstm.predict(piano_input)[0])
+		bass_out.append(b_out)
+		s_out = np.argmax(sax_lstm.predict(piano_input)[0])
+		sax_out.append(s_out)
+		piano_input = np.roll(piano_input, -1, axis=1)
+		piano_input[-1] = p_out
+
+	for _ in range(50, length * 4):
 		p_out = np.argmax(piano_lstm.predict(piano_input)[0])
 		piano_out.append(p_out)
 		b_out = np.argmax(bass_lstm.predict(piano_input)[0])
@@ -220,6 +253,8 @@ def generate_arch_3(length):
 		sax_out.append(s_out)
 		piano_input = np.roll(piano_input, -1, axis=1)
 		piano_input[-1] = p_out
+		if p_out is 2:
+			break
 
 	return [piano_out, bass_out, sax_out]
 
