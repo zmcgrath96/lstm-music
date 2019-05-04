@@ -15,7 +15,7 @@ def main(args):
 
 		# train 
 		lstm = musicLSTM(in_shape, out_shape)
-		lstm.train(piano_in, piano_out, 'piano_lstm.h5', it=10)
+		lstm.train(piano_in, piano_out, 'piano_lstm.h5', it=10, batch=64)
 
 		# get inputs and outputs
 		bass_in, bass_out = get_input_and_output(1)
@@ -26,7 +26,7 @@ def main(args):
 
 		# train 
 		lstm = musicLSTM(in_shape, out_shape)
-		lstm.train(bass_in, bass_out, 'bass_lstm.h5', it=10)
+		lstm.train(bass_in, bass_out, 'bass_lstm.h5', it=10, batch=64)
 
 		# get inputs and outputs
 		sax_in, sax_out = get_input_and_output(1)
@@ -37,7 +37,7 @@ def main(args):
 
 		# train 
 		lstm = musicLSTM(in_shape, out_shape)
-		lstm.train(bass_in, bass_out, 'sax_lstm.h5', it=10)
+		lstm.train(bass_in, bass_out, 'sax_lstm.h5', it=10, batch=64)
 
 	elif '-g' in args[0]:
 		
