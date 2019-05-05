@@ -43,11 +43,11 @@ This project is unique in its architecture. Three different approaches were take
 The data set used for trainin is Jazz. The most popular instruments for this dataset were as follows: Piano, Bass, Saxaphone. Below are diagrams for the three architectures described with the instruments in their respective positions. 
 
 #### Architecture 1
-![architecture 1](https://github.com/zmcgrath96/lstm-music/images/Architecture1)
+![architecture 1](https://github.com/zmcgrath96/lstm-music/blob/master/images/Architecture%201.pdf)
 #### Architecture 2
-![architecture 2](https://github.com/zmcgrath96/lstm-music/images/Architecture2)
+![architecture 2](https://github.com/zmcgrath96/lstm-music/blob/master/images/Architecture%202.pdf)
 #### Architecture 3
-![architecture 3](https://github.com/zmcgrath96/lstm-music/images/Architecture3)
+![architecture 3](https://github.com/zmcgrath96/lstm-music/blob/master/images/Architecture%203.pdf)
 
 ## Running
 ### Training
