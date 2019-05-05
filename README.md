@@ -26,7 +26,7 @@ Clone the repo
 
 Install dependencies
 ```
-$HMM> pip3 install -r requirements.txt
+$lstm-music> pip3 install -r requirements.txt
 ```
 
 ## Theory
