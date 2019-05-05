@@ -54,6 +54,22 @@ The data set used for trainin is Jazz. The most popular instruments for this dat
 ```
 python3 main.py -t=<instrument> -arch=<architecture number>
 ```
-The instrument parameter can take values of 'piano', 'bass' or 'sax'. Architectures can be 1, 2, or 3
+The instrument parameter can take values of 'piano', 'bass' or 'sax'. Architectures can be 1, 2, or 3.
 ### Generating Music
-## Process
+```
+python3 main.py -g -arch=<architecture number>
+```
+The architecture number can be 1, 2, or 3. The output is saved as a MIDI (.mid) file. A quick google search and you can find a midi player to upload the song to play.
+## Results
+The initial trained set had a training accuracy of around 30%, with some in the 20s and some in the high 30s. Every LSTM had 2 layers of 256 nodes with one fully connected layer. The classes numbered about 9000 due to the unique combinations of notes and octaves. 
+
+Its hard to judge the quality of music as it is very subjective. Making this process even more difficult is the sporadic nature of Jazz music. As a genre, jazz has lots of jumps in octaves, notes, instruments and many more. Without a thorough understanding of music theory or how to write music, we dove into this with an outside perspective. We had two rationales: music could either follow one 'root' instrument, or they could play off eachother. This is the reason for the three different architectures, as we wanted to see how each would perform. 
+## Alternative Designs
+Given the uniqueness of the 3 architectures, we will not dive into alternate architectures but instead how the LSTMs were changed in order to try for different results
+### Class Number -- branch no-octave
+Initially, the number of classes numbered about 9000. This was due to how we chose to classify notes. If multiple notes or chords were played at one timestamp, they were just considered a chord of all of those notes. We sorted them and made sure every note in there was unique. This was to avoid replication of classes. Even though we didn't include volume and wether or not a combination of notes was a chord or not, we still ended up with 9000 classes. 
+
+In an effort to combat this, we removed the octave number from each note. Doing this and only keeping the name of the note with no other information dramatically reduced the number of classes to about 2200, or about 1/4 the original number. We maintained the 2 layers of 256 nodes each and the dense layer. Even with this change, the accuracy still hovered around the high 30s, with the occasional model reaching about 60%. Fewer classes improved the accuracy by about 10% from the original one.
+### Depth -- branch 3-layer 
+### Width -- branch width-512
+
