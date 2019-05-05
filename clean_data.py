@@ -39,10 +39,10 @@ def clean(songs, song_lengths, note_width):
 						break
 					to_append = rest_name
 					if isinstance(inst[n], note.Note):
-						to_append = inst[n].nameWithOctave
+						to_append = inst[n].name
 						encoded_step_1[s_index][i_index][i].append(to_append)
 					elif isinstance(inst[n], chord.Chord):
-						to_append = [x.nameWithOctave for x in inst[n].pitches]
+						to_append = [x.name for x in inst[n].pitches]
 						encoded_step_1[s_index][i_index][i] += to_append
 			i_index += 1
 		s_index += 1
