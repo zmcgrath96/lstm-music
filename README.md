@@ -41,6 +41,11 @@ This project is unique in its architecture. Three different approaches were take
 The data set used for trainin is Jazz. The most popular instruments for this dataset were as follows: Piano, Bass, Saxaphone. Below are diagrams for the three architectures described with the instruments in their respective positions. 
 ## Running
 ### Training
+Cleaning Data
+```
+python3 midi.py
+```
+Training Models
 ```
 python3 main.py -t=<instrument> -arch=<architecture number>
 ```
