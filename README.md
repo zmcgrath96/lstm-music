@@ -26,7 +26,7 @@ Clone the repo
 
 Install dependencies
 ```
-$HMM> pip3 install -r requirements.txt
+$lstm-music> pip3 install -r requirements.txt
 ```
 
 ## Theory
@@ -54,6 +54,17 @@ The data set used for trainin is Jazz. The most popular instruments for this dat
 ```
 python3 main.py -t=<instrument> -arch=<architecture number>
 ```
-The instrument parameter can take values of 'piano', 'bass' or 'sax'. Architectures can be 1, 2, or 3
+The instrument parameter can take values of 'piano', 'bass' or 'sax'. Architectures can be 1, 2, or 3.
 ### Generating Music
-## Process
+```
+python3 main.py -g -arch=<architecture number>
+```
+The architecture number can be 1, 2, or 3. The output is saved as a MIDI (.mid) file. A quick google search and you can find a midi player to upload the song to play.
+## Results
+The initial trained set had a training accuracy of around 30%, with some in the 20s and some in the high 30s. Every LSTM had 2 layers of 256 nodes with one fully connected layer. The classes numbered about 9000 due to the unique combinations of notes and octaves. 
+
+Its hard to judge the quality of music as it is very subjective. Making this process even more difficult is the sporadic nature of Jazz music. As a genre, jazz has lots of jumps in octaves, notes, instruments and many more. Without a thorough understanding of music theory or how to write music, we dove into this with an outside perspective. We had two rationales: music could either follow one 'root' instrument, or they could play off eachother. This is the reason for the three different architectures, as we wanted to see how each would perform. 
+## Alternative Designs
+Given the uniqueness of the 3 architectures, we will not dive into alternate architectures but instead how the LSTMs were changed in order to try for different results
+
+
