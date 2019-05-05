@@ -46,9 +46,12 @@ def create_part(prediction_output, instrumentType):
 		else:
 			new_note.storedInstrument = instrument.Saxophone()
 
+		# assign duration
+		new_note.duration.quarterLength = 0.25
+
 		# assign and update offset
 		new_note.offset = offset
-		offset += 1
+		offset += .25
 
 		# add note to part
 		output_notes.append(new_note)
