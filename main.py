@@ -3,7 +3,7 @@ import numpy as np
 import sys
 import pickle
 import os
-from create_song import create_song
+import datetime
 
 def main(args):
 	# determine which architecture to use
@@ -70,8 +70,6 @@ def main(args):
 			# get shapes for input and output
 			in_shape = (sax_in.shape[1], sax_in.shape[2])
 			out_shape = sax_out.shape[1]
-
-			# train 
 			lstm = musicLSTM(in_shape, out_shape)
 			lstm.train(sax_in, sax_out, path + name, it=20, batch=64)
 		else:
@@ -96,7 +94,11 @@ def main(args):
 		elif arch is 3:
 			song = generate_arch_3(song_length)
 
-		create_song(song, 'output.mid')
+		now = datetime.datetime.now()
+		from create_song import create_song
+		if not os.path.exists('songs/architecture{}'.format(arch)):
+			os.makedirs('songs/architecture{}'.format(arch))
+		create_song(song, 'songs/architecture{}/output-arch{}-{}{}{}-{}:{}:{}-.mid'.format(arch, arch, now.year, now.month, now.day, now.hour, now.minute, now.second))
 
 def get_input_and_output(inst, arch):
 	# load embeddings and encodings
@@ -139,7 +141,7 @@ def generate_arch_1(length):
 	piano_input = np.full((1, 100, 1), 1)
 	
 	# load models and distributions
-	piano_model_path = get_last_model_path('piano', 1)
+	piano_model_path, _ = get_last_model_path('piano', 1)
 	bass_dist = np.load('models/architecture1/bass-dist.npy')
 	sax_dist = np.load('models/architecture1/sax-dist.npy')
 	piano_lstm = musicLSTM(filepath=piano_model_path)
@@ -182,9 +184,9 @@ def generate_arch_2(length):
 	bass_input = np.array((1, 100, 1)).fill(1)
 	
 	# get paths to most recent models
-	piano_model_path = get_last_model_path('piano', 2)
-	bass_model_path = get_last_model_path('bass', 2)
-	sax_model_path = get_last_model_path('sax', 2)
+	piano_model_path, _ = get_last_model_path('piano', 2)
+	bass_model_path, _ = get_last_model_path('bass', 2)
+	sax_model_path, _ = get_last_model_path('sax', 2)
 	bass_dist = np.load('models/architecture1/bass-dist.npy')
 	num_classes = len(bass_dist)
 
@@ -232,9 +234,9 @@ def generate_arch_3(length):
 	piano_input = np.array((1, 100, 1)).fill(1)
 
 	# get paths to most recent models
-	piano_model_path = get_last_model_path('piano', 3)
-	bass_model_path = get_last_model_path('bass', 3)
-	sax_model_path = get_last_model_path('sax', 3)
+	piano_model_path, _ = get_last_model_path('piano', 3)
+	bass_model_path, _ = get_last_model_path('bass', 3)
+	sax_model_path, _ = get_last_model_path('sax', 3)
 
 	# load models and distributions
 	piano_lstm = musicLSTM(filepath=piano_model_path)
@@ -284,9 +286,9 @@ def get_last_model_path(inst, arch):
 				num = curr_num
 				path = i
 	if path is '':
-		return None
+		return None, None
 	else:
-		return 'models/architecture{}/'.format(arch) + path
+		return 'models/architecture{}/'.format(arch) + path , num
 	
 
 if __name__ == '__main__':
