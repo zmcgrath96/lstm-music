@@ -27,10 +27,12 @@ def clean(songs, song_lengths, note_width):
 		song = songs[s_key]
 		i_index = 0
 		for i_key in song:
+			if i_key not in enumerated_notes:
+				enumerated_notes[i_key] = {}
 			encoded_step_1[s_index][i_index] = [[rest_name] for i in range(math.ceil(song_lengths[s_index] / note_width))]
 			inst = song[i_key].notesAndRests.activeElementList
 			for n in range(1, len(inst)):
-				if not (isinstance(inst[n], note.Note) or isinstance(inst[n], chord.Chord)):
+				if not isinstance(inst[n], note.Note):
 					continue
 				start = math.ceil(inst[n].offset / note_width)
 				end = start + math.ceil(inst[n].duration.quarterLength / note_width)
@@ -39,11 +41,11 @@ def clean(songs, song_lengths, note_width):
 						break
 					to_append = rest_name
 					if isinstance(inst[n], note.Note):
-						to_append = inst[n].name
+						to_append = inst[n].nameWithOctave
 						encoded_step_1[s_index][i_index][i].append(to_append)
-					elif isinstance(inst[n], chord.Chord):
-						to_append = [x.name for x in inst[n].pitches]
-						encoded_step_1[s_index][i_index][i] += to_append
+					# elif isinstance(inst[n], chord.Chord):
+					# 	to_append = [x.name for x in inst[n].pitches]
+					# 	encoded_step_1[s_index][i_index][i] += to_append
 			i_index += 1
 		s_index += 1
 
@@ -54,7 +56,7 @@ def clean(songs, song_lengths, note_width):
 		for i in range(len(encoded_step_1[s])):
 			encoded[s][i] = [0 for _ in range(len(encoded_step_1[s][i]))]
 			for n in range(len(encoded[s][i])):
-				clean_note = stringify_notes(sort_notes(remove_rest(encoded_step_1[s][i][n]))) if len(encoded_step_1[s][i][n]) > 1 else encoded_step_1[s][i][n][0]
+				clean_note = stringify_notes(pick_last(remove_rest(encoded_step_1[s][i][n]))) if len(encoded_step_1[s][i][n]) > 1 else encoded_step_1[s][i][n][0]
 				if clean_note not in enumerated_notes:
 					enumerated_notes[clean_note] = num
 					num += 1

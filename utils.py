@@ -2,8 +2,8 @@ from music21 import note
 
 REST_NAME = note.Rest().name
 
-def sort_notes(l):
-	return list(set(sorted(l)))
+def pick_last(l):
+	return l[-1]
 
 def stringify_notes(l):
 	return ','.join(l)
