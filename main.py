@@ -96,7 +96,9 @@ def main(args):
 		elif arch is 3:
 			song = generate_arch_3(song_length)
 
-		create_song(song, 'output.mid')
+		if not os.path.exists('songs/architecture{}'.format(arch)):
+			os.makedirs('songs/architecture{}'.format(arch))
+		create_song(song, 'songs/architecture{}/output-arch{}-{}{}{}-{}{}{}.mid'.format(arch, arch, now.year, now.month, now.day, now.hour, now.minute, now.second))
 
 def get_input_and_output(inst, arch):
 	# load embeddings and encodings
@@ -149,7 +151,6 @@ def generate_arch_1(length):
 	piano_out = []
 	bass_out = []
 	sax_out = []
-
 	for _ in range(50):
 		p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
 		piano_out.append(p_out)
@@ -178,8 +179,8 @@ def generate_arch_1(length):
 
 def generate_arch_2(length):
 	# create input and fill with 1's
-	piano_input = np.array((1, 100, 1)).fill(1)
-	bass_input = np.array((1, 100, 1)).fill(1)
+	piano_input = np.full((1, 100, 1), 1)
+	bass_input = np.full((1, 100, 1), 1)
 	
 	# get paths to most recent models
 	piano_model_path = get_last_model_path('piano', 2)
@@ -229,7 +230,7 @@ def generate_arch_2(length):
 
 def generate_arch_3(length):
 	# create input and fill with 1's
-	piano_input = np.array((1, 100, 1)).fill(1)
+	piano_input = np.full((1, 100, 1), 1)
 
 	# get paths to most recent models
 	piano_model_path = get_last_model_path('piano', 3)
