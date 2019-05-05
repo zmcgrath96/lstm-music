@@ -25,5 +25,5 @@ class musicLSTM:
         checkpoint = ModelCheckpoint(filepath)
         self.model.fit(input, output, epochs=it, batch_size=batch, callbacks=[checkpoint])
 
-    def predict(self, input):
-        return self.model.predict(input)
+    def predict(self, inst_input):
+        return self.model.predict(inst_input)
