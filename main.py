@@ -21,7 +21,6 @@ def main(args):
 		
 		# get inputs and outputs
 		piano_in, piano_out = get_input_and_output('piano', arch)
-		print(piano_in.shape)
 		# get shapes for input and output
 		in_shape = (piano_in.shape[1], piano_in.shape[2])
 		out_shape = piano_out.shape[1]
