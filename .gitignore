@@ -3,3 +3,4 @@
 pickle/architecture*
 *vscode*
 */*.pyc
+*dist.npy

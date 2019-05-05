@@ -98,7 +98,7 @@ def main(args):
 		from create_song import create_song
 		if not os.path.exists('songs/architecture{}'.format(arch)):
 			os.makedirs('songs/architecture{}'.format(arch))
-		create_song(song, 'songs/architecture{}/output-arch{}-{}{}{}-{}:{}:{}-.mid'.format(arch, arch, now.year, now.month, now.day, now.hour, now.minute, now.second))
+		create_song(song, 'songs/architecture{}/output-arch{}-{}{}{}-{}{}{}.mid'.format(arch, arch, now.year, now.month, now.day, now.hour, now.minute, now.second))
 
 def get_input_and_output(inst, arch):
 	# load embeddings and encodings
@@ -152,19 +152,21 @@ def generate_arch_1(length):
 	bass_out = []
 	sax_out = []
 
-	for _ in range(50):
+	# for _ in range(50):
+	# 	p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
+	# 	if p_out is 2:
+	# 		continue
+	# 	piano_out.append(p_out)
+	# 	b_out = np.random.choice(num_classes, p=bass_dist[p_out])
+	# 	bass_out.append(b_out)
+	# 	s_out = np.random.choice(num_classes, p=sax_dist[b_out])
+	# 	sax_out.append(s_out)
+	# 	piano_input = np.roll(piano_input, -1, axis=1)
+	# 	piano_input[-1] = p_out
+
+
+	for _ in range(length * 4):
 		p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
-		piano_out.append(p_out)
-		b_out = np.random.choice(num_classes, p=bass_dist[p_out])
-		bass_out.append(b_out)
-		s_out = np.random.choice(num_classes, p=sax_dist[b_out])
-		sax_out.append(s_out)
-		piano_input = np.roll(piano_input, -1, axis=1)
-		piano_input[-1] = p_out
-
-
-	for _ in range(50, length * 4):
-		p_out = np.argmax(piano_lstm.predict(piano_input)[0])
 		piano_out.append(p_out)
 		b_out = np.random.choice(num_classes, p=bass_dist[p_out])
 		bass_out.append(b_out)
