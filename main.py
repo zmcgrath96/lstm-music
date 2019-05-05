@@ -4,6 +4,7 @@ import sys
 import pickle
 import os
 from create_song import create_song
+import datetime
 
 def main(args):
 	# determine which architecture to use
@@ -96,6 +97,7 @@ def main(args):
 		elif arch is 3:
 			song = generate_arch_3(song_length)
 
+		now = datetime.datetime.now()
 		if not os.path.exists('songs/architecture{}'.format(arch)):
 			os.makedirs('songs/architecture{}'.format(arch))
 		create_song(song, 'songs/architecture{}/output-arch{}-{}{}{}-{}{}{}.mid'.format(arch, arch, now.year, now.month, now.day, now.hour, now.minute, now.second))
