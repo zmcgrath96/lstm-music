@@ -10,7 +10,9 @@ class musicLSTM:
             self.model = Sequential()
             self.model.add(LSTM(256, input_shape=in_shape, return_sequences=True))
             self.model.add(Dropout(0.3))
-            self.model.add(LSTM(256))
+            self.model.add(LSTM(512, return_sequences=True))
+            self.model.add(Dropout(0.3))
+            self.model.add(LSTM(1024))
             self.model.add(Dropout(0.3))
             self.model.add(Dense(out_size))
             self.model.add(Activation('softmax'))
@@ -23,7 +25,7 @@ class musicLSTM:
     def train(self, input, output, filepath, it=200, batch=64):
         filepath += "-{epoch:02d}.hdf5"
         checkpoint = ModelCheckpoint(filepath)
-        self.model.fit(input, output, epochs=it, batch_size=batch, callbacks=[checkpoint])
+        self.model.fit(input, output, epochs=it, batch_size=batch, callbacks=[checkpoint], shuffle=True)
 
     def predict(self, inst_input):
         return self.model.predict(inst_input)
