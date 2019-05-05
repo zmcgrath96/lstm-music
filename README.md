@@ -35,19 +35,25 @@ The network is a Long Short-Term Memory (LSTM) neural network. LSTM is desireabl
 
 This project is unique in its architecture. Three different approaches were taken:
 1. One LSTM for the most common instrument in a genre with two probablist models for two other instruments. The input to the first probablistic model is the output from the LSTM, which choses a random sample from the distribution of the relationship between the first instrument note and the second instrument. A similar process is done for the final model, using the output of the second as the input to the third.
+
 2. Three LSTMs with the most common instrument being the first LSTM. The output of this feeds into the LSTM of the second most common instrument which produces notes based on the first instrument. Finally, the last LSTM uses the output of the second LSTM as input and bases its notes to play off of the second instrument.
+
 3. Three LSTMs are used again, but a 'root' instrument is the basis for all three instruments. 
 
 The data set used for trainin is Jazz. The most popular instruments for this dataset were as follows: Piano, Bass, Saxaphone. Below are diagrams for the three architectures described with the instruments in their respective positions. 
+
+#### Architecture 1
+![architecture 1](https://github.com/zmcgrath96/lstm-music/images/Architecture1)
+#### Architecture 2
+![architecture 2](https://github.com/zmcgrath96/lstm-music/images/Architecture2)
+#### Architecture 3
+![architecture 3](https://github.com/zmcgrath96/lstm-music/images/Architecture3)
+
 ## Running
 ### Training
-Cleaning Data
-```
-python3 midi.py
-```
-Training Models
 ```
 python3 main.py -t=<instrument> -arch=<architecture number>
 ```
+The instrument parameter can take values of 'piano', 'bass' or 'sax'. Architectures can be 1, 2, or 3
 ### Generating Music
 ## Process

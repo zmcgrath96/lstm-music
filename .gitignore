@@ -3,4 +3,4 @@
 pickle/architecture*
 *vscode*
 */*.pyc
-*dist.npy
+*DS_Store
