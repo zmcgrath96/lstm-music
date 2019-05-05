@@ -27,8 +27,6 @@ def clean(songs, song_lengths, note_width):
 		song = songs[s_key]
 		i_index = 0
 		for i_key in song:
-			if i_key not in enumerated_notes:
-				enumerated_notes[i_key] = {}
 			encoded_step_1[s_index][i_index] = [[rest_name] for i in range(math.ceil(song_lengths[s_index] / note_width))]
 			inst = song[i_key].notesAndRests.activeElementList
 			for n in range(1, len(inst)):
