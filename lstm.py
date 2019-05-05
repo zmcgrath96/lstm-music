@@ -16,7 +16,7 @@ class musicLSTM:
             self.model.add(Activation('softmax'))
             opt = Adam(lr=0.001, beta_1=0.99, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
             self.model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
-            
+
         else:
             self.model = load_model(filepath)
 
