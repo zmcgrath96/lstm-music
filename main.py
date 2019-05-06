@@ -3,7 +3,10 @@ import numpy as np
 import sys
 import pickle
 import os
+<<<<<<< HEAD
 from create_song import create_song
+=======
+>>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 import datetime
 
 def main(args):
@@ -70,8 +73,6 @@ def main(args):
 			# get shapes for input and output
 			in_shape = (sax_in.shape[1], sax_in.shape[2])
 			out_shape = sax_out.shape[1]
-
-			# train 
 			lstm = musicLSTM(in_shape, out_shape)
 			lstm.train(sax_in, sax_out, path + name, it=50, batch=64)
 		else:
@@ -97,6 +98,10 @@ def main(args):
 			song = generate_arch_3(song_length)
 
 		now = datetime.datetime.now()
+<<<<<<< HEAD
+=======
+		from create_song import create_song
+>>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 		if not os.path.exists('songs/architecture{}'.format(arch)):
 			os.makedirs('songs/architecture{}'.format(arch))
 		create_song(song, 'songs/architecture{}/output-arch{}-{}{}{}-{}{}{}.mid'.format(arch, arch, now.year, now.month, now.day, now.hour, now.minute, now.second))
@@ -142,7 +147,7 @@ def generate_arch_1(length):
 	piano_input = np.full((1, 100, 1), 1)
 	
 	# load models and distributions
-	piano_model_path = get_last_model_path('piano', 1)
+	piano_model_path, _ = get_last_model_path('piano', 1)
 	bass_dist = np.load('models/architecture1/bass-dist.npy')
 	sax_dist = np.load('models/architecture1/sax-dist.npy')
 	piano_lstm = musicLSTM(filepath=piano_model_path)
@@ -152,8 +157,16 @@ def generate_arch_1(length):
 	piano_out = []
 	bass_out = []
 	sax_out = []
+<<<<<<< HEAD
 	# for _ in range(50):
 	# 	p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
+=======
+
+	# for _ in range(50):
+	# 	p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
+	# 	if p_out is 2:
+	# 		continue
+>>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 	# 	piano_out.append(p_out)
 	# 	b_out = np.random.choice(num_classes, p=bass_dist[p_out])
 	# 	bass_out.append(b_out)
@@ -184,9 +197,9 @@ def generate_arch_2(length):
 	bass_input = np.full((1, 100, 1), 1)
 	
 	# get paths to most recent models
-	piano_model_path = get_last_model_path('piano', 2)
-	bass_model_path = get_last_model_path('bass', 2)
-	sax_model_path = get_last_model_path('sax', 2)
+	piano_model_path, _ = get_last_model_path('piano', 2)
+	bass_model_path, _ = get_last_model_path('bass', 2)
+	sax_model_path, _ = get_last_model_path('sax', 2)
 	bass_dist = np.load('models/architecture1/bass-dist.npy')
 	num_classes = len(bass_dist)
 
@@ -200,7 +213,11 @@ def generate_arch_2(length):
 	bass_out = []
 	sax_out = []
 
+<<<<<<< HEAD
 	# generate output
+=======
+	# # generate output
+>>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 	# for _ in range(50):
 	# 	p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
 	# 	piano_out.append(p_out)
@@ -218,7 +235,11 @@ def generate_arch_2(length):
 		piano_out.append(p_out)
 		b_out = np.random.choice(num_classes, p=bass_lstm.predict(piano_input)[0])
 		bass_out.append(b_out)
+<<<<<<< HEAD
 		s_out =np.random.choice(num_classes, p=sax_lstm.predict(bass_input)[0])
+=======
+		s_out = np.random.choice(num_classes, p=sax_lstm.predict(bass_input)[0])
+>>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 		sax_out.append(s_out)
 		piano_input = np.roll(piano_input, -1, axis=1)
 		piano_input[-1] = p_out
@@ -234,9 +255,9 @@ def generate_arch_3(length):
 	piano_input = np.full((1, 100, 1), 1)
 
 	# get paths to most recent models
-	piano_model_path = get_last_model_path('piano', 3)
-	bass_model_path = get_last_model_path('bass', 3)
-	sax_model_path = get_last_model_path('sax', 3)
+	piano_model_path, _ = get_last_model_path('piano', 3)
+	bass_model_path, _ = get_last_model_path('bass', 3)
+	sax_model_path, _ = get_last_model_path('sax', 3)
 
 	# load models and distributions
 	piano_lstm = musicLSTM(filepath=piano_model_path)
@@ -250,7 +271,11 @@ def generate_arch_3(length):
 	bass_out = []
 	sax_out = []
 
+<<<<<<< HEAD
 	# generate output
+=======
+	# # generate output
+>>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 	# for _ in range(50):
 	# 	p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
 	# 	piano_out.append(p_out)
@@ -277,6 +302,7 @@ def generate_arch_3(length):
 
 
 def get_last_model_path(inst, arch):
+<<<<<<< HEAD
 	if os.path.isfile('models/architecture{}/'.format(arch) + inst +'-lstm.hdf5'):
 		return 'models/architecture{}/'.format(arch) + inst +'-lstm.hdf5'
 	else:
@@ -293,6 +319,20 @@ def get_last_model_path(inst, arch):
 		else:
 			return 'models/architecture{}/'.format(arch) + path
 	
+=======
+	path = ''
+	num = -1
+	for i in os.listdir('models/architecture{}'.format(arch)):
+		if i.startswith(inst + '-lstm'):
+			curr_num = int(i.split('-')[2].split('.')[0])
+			if curr_num > num:
+				num = curr_num
+				path = i
+	if path is '':
+		return None, None
+	else:
+		return 'models/architecture{}/'.format(arch) + path , num
+>>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 	
 
 if __name__ == '__main__':

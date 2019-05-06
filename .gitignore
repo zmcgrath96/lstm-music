@@ -4,4 +4,8 @@ pickle/architecture*
 *vscode*
 */*.pyc
 *DS_Store
+<<<<<<< HEAD
 *.npy
+=======
+*.npy
+>>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
