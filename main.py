@@ -277,7 +277,22 @@ def generate_arch_3(length):
 
 
 def get_last_model_path(inst, arch):
-	return 'models/architecture{}/'.format(arch) + inst +'-lstm.hdf5'
+	if os.path.isfile('models/architecture{}/'.format(arch) + inst +'-lstm.hdf5'):
+		return 'models/architecture{}/'.format(arch) + inst +'-lstm.hdf5'
+	else:
+		path = ''
+		num = -1
+		for i in os.listdir('models/architecture{}'.format(arch)):
+			if i.startswith(inst + '-lstm'):
+				curr_num = int(i.split('-')[2].split('.')[0])
+				if curr_num > num:
+					num = curr_num
+					path = i
+		if path is '':
+			return None
+		else:
+			return 'models/architecture{}/'.format(arch) + path
+	
 	
 
 if __name__ == '__main__':
