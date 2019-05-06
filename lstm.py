@@ -21,9 +21,9 @@ class musicLSTM:
             self.model = load_model(filepath)
 
     def train(self, input, output, filepath, it=200, batch=64):
-        filepath += "-{epoch:02d}.hdf5"
-        checkpoint = ModelCheckpoint(filepath)
-        self.model.fit(input, output, epochs=it, batch_size=batch, callbacks=[checkpoint], shuffle=True)
+        filepath += ".hdf5"
+        checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True)
+        self.model.fit(input, output, validation_split=0.1, epochs=it, batch_size=batch, callbacks=[checkpoint], shuffle=True)
 
     def predict(self, input):
         return self.model.predict(input)
