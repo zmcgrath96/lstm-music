@@ -31,7 +31,7 @@ def main(args):
 		if not os.path.exists(path):
 			os.makedirs(path)
 		lstm = musicLSTM(in_shape, out_shape)
-		lstm.train(piano_in, piano_out, path + name, it=20, batch=64)
+		lstm.train(piano_in, piano_out, path + name, it=50, batch=64)
 
 	elif '-t=bass' in args:
 		# get inputs and outputs
@@ -50,7 +50,7 @@ def main(args):
 
 			# train 
 			lstm = musicLSTM(in_shape, out_shape)
-			lstm.train(bass_in, bass_out, path + name, it=20, batch=64)
+			lstm.train(bass_in, bass_out, path + name, it=50, batch=64)
 		else:
 			bass_dist = create_prob_dict(bass_in, bass_out)
 			np.save(path + '/bass-dist', bass_dist)
@@ -73,7 +73,7 @@ def main(args):
 
 			# train 
 			lstm = musicLSTM(in_shape, out_shape)
-			lstm.train(sax_in, sax_out, path + name, it=20, batch=64)
+			lstm.train(sax_in, sax_out, path + name, it=50, batch=64)
 		else:
 			sax_dist = create_prob_dict(sax_in, sax_out)
 			np.save(path + '/sax-dist', sax_dist)
@@ -277,18 +277,7 @@ def generate_arch_3(length):
 
 
 def get_last_model_path(inst, arch):
-	path = ''
-	num = -1
-	for i in os.listdir('models/architecture{}'.format(arch)):
-		if i.startswith(inst + '-lstm'):
-			curr_num = int(i.split('-')[2].split('.')[0])
-			if curr_num > num:
-				num = curr_num
-				path = i
-	if path is '':
-		return None
-	else:
-		return 'models/architecture{}/'.format(arch) + path
+	return 'models/architecture{}/'.format(arch) + inst +'-lstm.hdf5'
 	
 
 if __name__ == '__main__':
