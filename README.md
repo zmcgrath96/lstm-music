@@ -61,10 +61,22 @@ python3 main.py -g -arch=<architecture number>
 ```
 The architecture number can be 1, 2, or 3. The output is saved as a MIDI (.mid) file. A quick google search and you can find a midi player to upload the song to play.
 ## Results
-The initial trained set had a training accuracy of around 30%, with some in the 20s and some in the high 30s. Every LSTM had 2 layers of 256 nodes with one fully connected layer. The classes numbered about 9000 due to the unique combinations of notes and octaves. 
+The final design was trained over 20 epochs, all with around 80% training accuracy. While not the most pleasing music, there is some  rhythm with the piano. We trained with 50 epochs, but the performance was only marginaly better. 
 
 Its hard to judge the quality of music as it is very subjective. Making this process even more difficult is the sporadic nature of Jazz music. As a genre, jazz has lots of jumps in octaves, notes, instruments and many more. Without a thorough understanding of music theory or how to write music, we dove into this with an outside perspective. We had two rationales: music could either follow one 'root' instrument, or they could play off eachother. This is the reason for the three different architectures, as we wanted to see how each would perform. 
-## Alternative Designs
-Given the uniqueness of the 3 architectures, we will not dive into alternate architectures but instead how the LSTMs were changed in order to try for different results
 
+We also embedded 'start' and 'end' meta notes in order to start and end the song. This was also unique, but didn't seem to help much with at the end. 
+### Design Issues
+One of the largest issues that we ran into was the data set. Jazz MIDI data sets are few and far between. We found one set that had plenty of songs, but they all needed to have the 3 instruments. This grately reduced our data set. In adddition to that, after listening to several of the songs, they really weren't Jazz, but instrumental versions of various genres. 
+
+The output for each architecture are saved in the 'songs' folder and can be played on online MIDI players.
+
+Another issues we came across was class size. Initially, we tried to incorporate all chords and notes used in the training set, but this proved to be a futile pursuit. The class size grew to around 9000 different classes. Because of the number of rests in a song and the fact that there aren't different types of rests, the model initially only guess rests, and it was reflected in the training accuracy. We decided to then remove chords and only use combinations of notes. This reduced the class size to 2000, but still very large and yielded a similar result. Finally we reduced it to only the possible set of notes with octaves, which reduced the class size to 88. 
+
+Data cleaning was also an issue. Given the nature of the input, we had to remove chords and multiple notes over a time stamp to reduce the class size. 
+
+### Alternative Designs
+Several different designs were considered. Giving the piano a 'left' and 'right' hand for notes and chords would have allowed us to play chords with notes. The overlap of notes in time had to be omitted to reduce the class size.  
+
+There were many, many features we did not include that could be included to change the output type. This includes volume of the notes, tempo and harmonies. Given how we already tried to play music from several instruments off of eachother, we did not want to change too many variables. 
 
