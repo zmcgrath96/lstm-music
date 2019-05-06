@@ -50,12 +50,15 @@ def create_part(prediction_output, instrumentType):
 	# merge consecutive notes
 	output = [output_notes[0]]
 	for i in range(1, len(output_notes)):
-		current_note = output_notes[i].nameWithOctave
-
-		if current_note == output[-1].nameWithOctave:
-			output[-1].duration.quarterLength += .25
-		else:
+		if isinstance(output_notes[i], note.Rest):
 			output.append(output_notes[i])
+		else:
+			current_note = output_notes[i].nameWithOctave
+
+			if not isinstance(output[-1], note.Rest) and current_note == output[-1].nameWithOctave:
+				output[-1].duration.quarterLength += .25
+			else:
+				output.append(output_notes[i])
 
 	return stream.Part(output)
 	
