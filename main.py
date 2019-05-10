@@ -3,10 +3,7 @@ import numpy as np
 import sys
 import pickle
 import os
-<<<<<<< HEAD
 from create_song import create_song
-=======
->>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 import datetime
 
 def main(args):
@@ -98,10 +95,7 @@ def main(args):
 			song = generate_arch_3(song_length)
 
 		now = datetime.datetime.now()
-<<<<<<< HEAD
-=======
 		from create_song import create_song
->>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 		if not os.path.exists('songs/architecture{}'.format(arch)):
 			os.makedirs('songs/architecture{}'.format(arch))
 		create_song(song, 'songs/architecture{}/output-arch{}-{}{}{}-{}{}{}.mid'.format(arch, arch, now.year, now.month, now.day, now.hour, now.minute, now.second))
@@ -157,16 +151,11 @@ def generate_arch_1(length):
 	piano_out = []
 	bass_out = []
 	sax_out = []
-<<<<<<< HEAD
-	# for _ in range(50):
-	# 	p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
-=======
 
 	# for _ in range(50):
 	# 	p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
 	# 	if p_out is 2:
 	# 		continue
->>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 	# 	piano_out.append(p_out)
 	# 	b_out = np.random.choice(num_classes, p=bass_dist[p_out])
 	# 	bass_out.append(b_out)
@@ -213,11 +202,7 @@ def generate_arch_2(length):
 	bass_out = []
 	sax_out = []
 
-<<<<<<< HEAD
 	# generate output
-=======
-	# # generate output
->>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 	# for _ in range(50):
 	# 	p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
 	# 	piano_out.append(p_out)
@@ -235,11 +220,7 @@ def generate_arch_2(length):
 		piano_out.append(p_out)
 		b_out = np.random.choice(num_classes, p=bass_lstm.predict(piano_input)[0])
 		bass_out.append(b_out)
-<<<<<<< HEAD
-		s_out =np.random.choice(num_classes, p=sax_lstm.predict(bass_input)[0])
-=======
 		s_out = np.random.choice(num_classes, p=sax_lstm.predict(bass_input)[0])
->>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 		sax_out.append(s_out)
 		piano_input = np.roll(piano_input, -1, axis=1)
 		piano_input[-1] = p_out
@@ -271,11 +252,7 @@ def generate_arch_3(length):
 	bass_out = []
 	sax_out = []
 
-<<<<<<< HEAD
 	# generate output
-=======
-	# # generate output
->>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 	# for _ in range(50):
 	# 	p_out = np.random.choice(num_classes, p=piano_lstm.predict(piano_input)[0])
 	# 	piano_out.append(p_out)
@@ -302,24 +279,6 @@ def generate_arch_3(length):
 
 
 def get_last_model_path(inst, arch):
-<<<<<<< HEAD
-	if os.path.isfile('models/architecture{}/'.format(arch) + inst +'-lstm.hdf5'):
-		return 'models/architecture{}/'.format(arch) + inst +'-lstm.hdf5'
-	else:
-		path = ''
-		num = -1
-		for i in os.listdir('models/architecture{}'.format(arch)):
-			if i.startswith(inst + '-lstm'):
-				curr_num = int(i.split('-')[2].split('.')[0])
-				if curr_num > num:
-					num = curr_num
-					path = i
-		if path is '':
-			return None
-		else:
-			return 'models/architecture{}/'.format(arch) + path
-	
-=======
 	path = ''
 	num = -1
 	for i in os.listdir('models/architecture{}'.format(arch)):
@@ -332,7 +291,6 @@ def get_last_model_path(inst, arch):
 		return None, None
 	else:
 		return 'models/architecture{}/'.format(arch) + path , num
->>>>>>> 700b2def96bdbc797c2a7c8ad72c49cb2a96bce5
 	
 
 if __name__ == '__main__':
